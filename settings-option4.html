@@ -462,6 +462,51 @@ table.agtable{width:100%;border-collapse:collapse}
 .agfoot{display:flex;align-items:center;gap:10px;margin-top:auto;padding-top:14px;border-top:1px solid var(--border-soft)}
 .agpager{display:flex;align-items:center;gap:4px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);font-size:12px;color:var(--text-dim)}
 /* GPO installation mode — single-select list */
+/* ══ Agent Based Discovery improvements (Option 2) ══ */
+/* Option 4: method accordion — all three visible, the chosen one expands in place */
+.acc{border:1px solid var(--border);border-radius:8px;overflow:hidden;max-width:940px}
+.accitem+.accitem{border-top:1px solid var(--border)}
+.accitem.on{background:var(--panel-2)}
+.accrow{display:flex;align-items:center;gap:12px;padding:13px 14px;cursor:pointer;color:var(--text)}
+.accrow:hover:not(.off){background:var(--hover)}
+.accitem.on .accrow{background:var(--sel)}
+.acc-r{width:15px;height:15px;flex:0 0 15px;border-radius:50%;border:1px solid var(--track);display:grid;place-items:center}
+.accitem.on .acc-r{border-color:var(--teal)}
+.accitem.on .acc-r::after{content:"";width:7px;height:7px;border-radius:50%;background:var(--teal)}
+.accrow .si{width:17px;height:17px;flex:0 0 17px;color:var(--text-dim)}
+.accitem.on .accrow .si{color:var(--teal)}
+.acc-t{display:flex;flex-direction:column;gap:1px;flex:0 0 auto;min-width:150px}
+.acc-t b{font-size:12.8px;font-weight:600}
+.accitem.on .acc-t b{color:var(--white)}
+.acc-t i{font-size:11.2px;font-style:normal;color:var(--text-dim2)}
+.acc-n{flex:1;min-width:0;font-size:11.5px;color:var(--text-dim2);line-height:1.45}
+.acc-n.warn{color:var(--orange)}
+.acc-tag{flex:0 0 auto;font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-dim);background:var(--chip);border-radius:3px;padding:3px 7px;white-space:nowrap}
+.accitem.on .acc-tag{background:rgba(20,184,166,.18);color:var(--teal)}
+.acc-car{flex:0 0 auto;color:var(--faint);font-size:13px}
+.accrow.off{opacity:.5;cursor:not-allowed}
+.accrow.off .acc-r{border-style:dashed}
+.acc-body{padding:16px 14px 18px;border-top:1px solid var(--border)}
+.acc-body .fld:first-child{margin-top:0}
+@media(max-width:1250px){.acc-n{display:none}}
+/* target validation */
+.valrow{display:flex;align-items:center;gap:10px}
+.valrow .fi{flex:1}
+.tprev{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin:-4px 0 16px;padding:11px 14px;background:var(--panel-2);border:1px solid var(--border);border-radius:6px;max-width:760px}
+.tp{display:flex;align-items:baseline;gap:6px;font-size:12px;color:var(--text-dim)}
+.tp b{font-size:14px;font-weight:700;color:var(--text)}
+.tp.good b{color:var(--green)}
+.tp.bad b{color:var(--orange)}
+.tp-note{font-size:11.5px;color:var(--text-dim2);margin-left:auto}
+.tp-note a{color:var(--teal);cursor:pointer;text-decoration:underline}
+/* results: reason + retry */
+.agwhy{font-size:11.5px;color:var(--text-dim2)}
+.agwhy code{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--text-dim)}
+.agipdim{color:var(--text-dim2)}
+.agretry{display:flex;align-items:center;gap:10px;margin-top:14px;padding:10px 12px;background:rgba(242,80,75,.08);border:1px solid rgba(242,80,75,.35);border-radius:6px}
+.agretry span{font-size:12.5px;color:var(--red);font-weight:600;margin-right:2px}
+/* provisioning: apply to all */
+.applyall{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--text);cursor:pointer}
 .radiorow{display:flex;align-items:center;gap:18px;height:34px}
 .radio{display:flex;align-items:center;gap:8px;font-size:12.8px;color:var(--text-dim);cursor:pointer}
 .radio .rdot{width:15px;height:15px;border-radius:50%;border:1px solid var(--track);display:grid;place-items:center;flex:0 0 15px}
@@ -512,9 +557,9 @@ table.agtable{width:100%;border-collapse:collapse}
 
     <div class="protobar">
       <span class="pb-tag">PROTOTYPE</span>
-      <div class="vswitch" title="Five takes on the same Settings module"><span class="vlab">Settings</span><a class="von">Live parity</a><a href="settings-improved.html">Improved</a><a href="settings-option3.html">Option 3</a><a href="settings-option4.html">Option 4</a><a href="settings-option5.html">Option 5</a></div>
+      <div class="vswitch" title="Five takes on the same Settings module"><span class="vlab">Settings</span><a href="dashboard-ai-chat-assistant.html">Live parity</a><a href="settings-improved.html">Improved</a><a href="settings-option3.html">Option 3</a><a class="von">Option 4</a><a href="settings-option5.html">Option 5</a></div>
       <div class="pb-spacer"></div>
-      <span class="pb-note">Option 1 — faithful to the live product (build 10.0.0)</span>
+      <span class="pb-note">Option 4 — all three methods visible, one expands in place</span>
     </div>
 
     <!-- module title bar — live: back chevron + gear + "Settings", spans panel + content -->
@@ -1035,7 +1080,7 @@ const DISCO=[
  ['Wireless','d-wifi',['Cisco Wireless','Aruba Wireless','Ruijie Wireless','Ruckus Wireless','Extreme Wireless'],'Wireless'],
  ['Container Orchestration','d-container',['Kubernetes','Tanzu Kubernetes','OpenShift'],'Container'],
  ['Other','d-other',['IBM Tape Library','Ping'],'Other'],
- ['Agent Based Discovery','d-agent',['Remote Installation','Command Installation','Windows GPO Deployment'],'Agent',1]
+ ['Agent Based Discovery','d-agent',[],'Agent',1]
 ];
 /* per-type form spec — shape: 'target' (IP-addressed), 'cloud' (account-addressed), 'agent' (agent-enrolled) */
 const DTYPE={
@@ -1128,7 +1173,8 @@ function dPickCat(name){
   var c=DISCO.filter(function(x){return x[0]===name;})[0];
   dCat=(dCat===name&&c[2].length)?null:name;
   if(dCat&&c[2].length){dType=c[2][0];}
-  else if(dCat){dType=name;}
+  /* Agent Based Discovery is a leaf — land on the first method, no chooser screen */
+  else if(dCat){dType=(name==='Agent Based Discovery')?'Remote Installation':name;}
   dMode=null;dTarget='IP/Host';
   renderDTree();renderDForm();
 }
@@ -1284,6 +1330,7 @@ function agRender(){
       return '<button class="ostile'+(o===agOS?' on':'')+'" title="'+o+'" onclick="agPick(\''+o+'\')">'+
         '<img src="'+TYPE_ICON[o==='Windows'?'windows':'linux']+'" alt="'+o+'" /></button>';
     }).join('')+'</div></div>';
+  h+='<!--ACC-->'; /* everything after this becomes the expanded method's body */
   /* Installation type */
   h+='<div class="fld"><label>Installation type</label><div class="segrow">'+
     ['Single','Bulk'].map(function(m){
@@ -1313,13 +1360,15 @@ function agRender(){
           return '<button class="seg'+(b===agBulk?' on':'')+'" onclick="agSetBulk(\''+b+'\')">'+b+'</button>';
         }).join('')+'</div></div>'+
       (agBulk==='IP Range'
-        ? dFld('IP Range',1,dInp('e.g. 192.0.2.37-105'),3)
+        ? dFld('IP Range',1,'<div class="valrow">'+dInp('e.g. 192.0.2.37-105')+
+            '<button class="fbtn sm" onclick="agValidate()">Validate</button></div>',6)
         : '<div class="fld w6"><label>CSV<i>*</i></label><div class="csvrow">'+
           '<div class="csvfile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M21.4 11.05 12.25 20.2a5 5 0 0 1-7.07-7.07l9.19-9.19a3.33 3.33 0 1 1 4.71 4.71l-9.2 9.19a1.67 1.67 0 1 1-2.35-2.36l8.49-8.48"/></svg>Select File</div>'+
           '<button class="gprimary sm" onclick="toast(\'CSV uploaded — 86 hosts parsed\')">Upload CSV</button>'+
           '<a class="samplecsv" onclick="toast(\'Downloading sample CSV…\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M4 21h16"/></svg>Sample CSV</a>'+
           '</div></div>')+
       '</div>';
+    h+=agPreview();
   }
   /* credentials */
   h+='<div class="frow">'+dFld('Credential Profiles',1,dSel('Select'),3)+
@@ -1350,6 +1399,23 @@ function agRender(){
         '<button class="gprimary" onclick="agFinish()">Finish</button></div>';
     }
   }
+  /* ── Option 4: all three methods stay on screen as an accordion. The chosen one
+     expands in place with its own fields, the other two stay readable as one-liners,
+     so you can weigh them without losing what you have typed. ── */
+  var parts=h.split('<!--ACC-->'), head=parts[0], body=parts[1]||'';
+  h=head+'<div class="fld"><label>Install method</label><div class="acc">'+
+    AG_METHODS.map(function(m){
+      var blocked=(m[4]===agOS), on=(m[0]===dType);
+      var row='<div class="accrow'+(on?' on':'')+(blocked?' off':'')+'"'+
+        (blocked?'':' onclick="agGo(\''+m[0]+'\')"')+'>'+
+        '<span class="acc-r"></span>'+dIco(m[1])+
+        '<span class="acc-t"><b>'+m[0].replace(' Installation','').replace('Windows GPO Deployment','Group Policy')+'</b>'+
+          '<i>'+m[2]+'</i></span>'+
+        '<span class="acc-n'+(blocked?' warn':'')+'">'+(blocked?'Windows only — not available for the Linux agent':m[3])+'</span>'+
+        (blocked?'':'<span class="acc-tag">'+m[5]+'</span>')+
+        '<span class="acc-car">'+(on?'\u2304':'\u203a')+'</span></div>';
+      return '<div class="accitem'+(on?' on':'')+'">'+row+(on?'<div class="acc-body">'+body+'</div>':'')+'</div>';
+    }).join('')+'</div></div>';
   document.getElementById('dform').innerHTML=h;
   document.getElementById('dhelpTitle').textContent=dType+' · '+agOS;
   document.getElementById('dhelp').innerHTML=HELP.map(function(r){
@@ -1357,8 +1423,49 @@ function agRender(){
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg><p>'+r[1]+'</p></div>';
   }).join('');
 }
-function agPick(o){agOS=o;agRan=false;agRender();}
-function agReset(){agRan=false;agRender();}
+
+/* ══ Improvements, Agent Based Discovery only ══════════════════════════════════
+   The three installation methods are near-identical forms buried in the tree, so
+   you have to pick one before you can see what it costs you. And the flow is
+   really three phases (configure → install → provision) presented as one screen
+   plus two surprise drawers. Five changes:
+     1  the three methods switch inline, instead of hiding in the tree
+     3  pre-flight target validation, instead of finding out at install time
+     4  a failure reason + Retry failed, instead of a dead-end result table
+     5  apply-to-all in provisioning, instead of host-by-host across 86 machines
+   ═════════════════════════════════════════════════════════════════════════════*/
+var agValidated=false;
+const AG_METHODS=[
+ ['Remote Installation','d-remote','We connect and install it','Needs an account that can install on the host',null,'Fastest'],
+ ['Command Installation','d-command','You run one command on the host','Needs shell access — nothing is pushed',null,'No credentials needed'],
+ ['Windows GPO Deployment','d-gpo','Active Directory installs it','Needs a domain controller and a target OU','Linux','Best at scale'],
+];
+function agGo(name){dType=name;dMode=null;agRan=false;agValidated=false;renderDTree();renderDForm();}
+
+
+/* pre-flight: how many hosts is that range, and can we reach them? */
+function agValidate(){
+  agValidated=true;agRender();
+  toast('Checked 12 hosts in range — 9 reachable, 3 unreachable');
+}
+function agPreview(){
+  if(!agValidated)return '';
+  return '<div class="tprev">'+
+    '<span class="tp ok"><b>12</b>hosts in range</span>'+
+    '<span class="tp good"><b>9</b>reachable</span>'+
+    '<span class="tp bad"><b>3</b>unreachable</span>'+
+    '<span class="tp-note">Unreachable hosts are skipped. <a onclick="toast(\'192.0.2.x — no route, port 9444 closed\')">Which ones?</a></span>'+
+    '</div>';
+}
+function agPick(o){
+  agOS=o;agRan=false;agValidated=false;
+  /* GPO is Windows-only — switching to the Linux agent moves you off it */
+  var cur=AG_METHODS.filter(function(m){return m[0]===dType;})[0];
+  if(cur&&cur[4]===o){dType='Remote Installation';renderDTree();toast('Group Policy is Windows-only — switched to Remote Installation');}
+  agRender();
+}
+
+function agReset(){agRan=false;agValidated=false;agRender();}
 function agRun(){agRan=true;agRender();toast(dType==='Windows GPO Deployment'?'GPO package ready — import it in Group Policy Management':'Command generated — run it on the target host');}
 function agFinish(){var t=dType;agRan=false;closeCreate();toast(t+' saved');}
 function agSetPkgType(t){agPkgType=t;agRan=false;agRender();}
@@ -1385,11 +1492,18 @@ function agResult(){
   var hosts=agMode==='Single'?[AG_HOSTS[0]]:AG_HOSTS;
   agDrawer('Agent installation',
     '<div class="agsearch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3-3"/></svg><input placeholder="Search" /></div>'+
-    '<table class="agtable"><thead><tr><th>IP</th><th>STATUS</th></tr></thead><tbody>'+
+    '<table class="agtable"><thead><tr><th>IP</th><th>STATUS</th><th>DETAIL</th></tr></thead><tbody>'+
     hosts.map(function(x){
-      return '<tr><td><a class="agiplink" onclick="agInsight()">'+x[0]+'</a></td>'+
-        '<td><span class="agpill '+(x[1]==='Failed'?'bad':'ok')+'">'+x[1]+'</span></td></tr>';
+      var bad=x[1]==='Failed';
+      return '<tr><td>'+(bad?'<span class="agipdim">'+x[0]+'</span>':'<a class="agiplink" onclick="agInsight()">'+x[0]+'</a>')+'</td>'+
+        '<td><span class="agpill '+(bad?'bad':'ok')+'">'+x[1]+'</span></td>'+
+        '<td class="agwhy">'+(bad?'Credential rejected — account cannot write to <code>C:\\Program Files</code>':'Agent 10.0.0 running')+'</td></tr>';
     }).join('')+'</tbody></table>'+
+    (hosts.filter(function(x){return x[1]==='Failed';}).length
+      ? '<div class="agretry"><span>1 host failed.</span>'+
+        '<button class="fbtn sm" onclick="toast(\'Retrying 1 failed host…\')">Retry failed</button>'+
+        '<button class="fbtn sm" onclick="toast(\'Opening credential profile…\')">Fix credentials</button></div>'
+      : '')+
     '<p class="aghint">Pick a host that installed to choose what the agent should monitor.</p>'+
     agPager());
 }
@@ -1410,7 +1524,8 @@ function agRenderInsight(){
       return '<tr><td class="ck"><span class="ckbox'+(r[2]?' on':'')+'" onclick="this.classList.toggle(\'on\')">✓</span></td>'+
         '<td>'+r[0]+'</td>'+(r[1]?'<td><span class="agpill ok">'+r[1]+'</span></td>':'')+'</tr>';
     }).join('')+'</tbody></table>'+
-    '<div class="agfoot"><div class="gspacer"></div>'+
+    '<div class="agfoot"><label class="applyall"><span class="ckbox on" onclick="this.classList.toggle(\'on\')">\u2713</span>'+
+      'Apply to all 3 hosts that installed</label><div class="gspacer"></div>'+
       '<button class="fbtn" onclick="agRenderInsight()">Reset</button>'+
       '<button class="gprimary" onclick="agClose();toast(\'Provisioning started — selected items will be monitored\')">Provisioning</button></div>'+
     agPager());
