@@ -1291,7 +1291,7 @@ const AG_GPO_CMD={
   'Import-ready GPO package':{hint:'Import the package in Group Policy Management, then link the GPO to your target OU',
     cmd:'Computer Configuration \u203a Policies \u203a Windows Settings \u203a Scripts (Startup/Shutdown) \u203a Startup \u203a Add \u2026',
     dl:'Download GPO Package'},
-  'Custom GPO setup':{hint:'Run this command from an administrator Powershell session on a domain controller',
+  'Custom GPO setup':{hint:'Download the MSI and setup script, then run the script on a domain controller',
     cmd:'New-GPO -Name "Motadata Agent Rollout" | New-GPLink -Target "OU=Servers,DC=example,DC=com" ; Set-GPPrefRegistryValue -Name "Motadata Agent Rollout" -Context Computer -Action Update',
     dl:'Download MSI + Script'}
 };
@@ -1357,6 +1357,10 @@ function agRender(){
         '<label class="radio on"><span class="rdot"></span>Startup script</label>'+
       '</div></div></div>';
   }
+  /* Only Remote Installation reaches out to the hosts. Command Installation and
+     Group Policy hand you something to run or import, so neither needs a target
+     or credentials from us. */
+  if(!isRunFlow()){
   /* target */
   if(agMode==='Single'){
     h+='<div class="frow">'+dFld('IP/FQDM',1,dInp('e.g. 192.0.2.37-105'),3)+'</div>';
@@ -1380,6 +1384,7 @@ function agRender(){
   /* credentials */
   h+='<div class="frow">'+dFld('Credential Profiles',1,dSel('Select'),3)+
     '<div class="fld w3 btnfld"><button class="fbtn" onclick="toast(\'Create Credential Profile — opens the credential form\')">Create Credential Profile</button></div></div>';
+  }
   /* actions */
   /* Command Installation and Windows GPO Deployment both hand you something to run:
      Run reveals the panel below the fields, Finish closes the flow. No drawers. */
@@ -1387,7 +1392,7 @@ function agRender(){
   h+='<div class="factions ag"><div class="gspacer"></div>'+
     '<button class="fbtn" onclick="agReset()">Reset</button>'+
     (isRun
-      ? '<button class="gprimary" onclick="agRun()">Run</button>'
+      ? '<button class="gprimary" onclick="agRun()">'+(isCmd?'Generate Command':'Generate GPO')+'</button>'
       : '<button class="gprimary" onclick="agInstall()">Agent Installation</button>')+
     '</div>';
   /* the run-it-yourself panel is what separates the two categories:
@@ -1396,10 +1401,18 @@ function agRender(){
     var c=isGpo?AG_GPO_CMD[agPkgType]:AG_CMD[agOS];
     h+='<div class="agcmd">'+
       '<div class="agcmd-h">'+c.hint+'</div>'+
-      '<div class="agcmd-b"><code>'+c.cmd.replace(/</g,'&lt;')+'</code>'+
-      '<button class="copyi" title="Copy" onclick="toast(\'Command copied\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button></div>'+
-      '<div class="agcmd-f"><button class="fbtn" onclick="toast(\'Downloading '+(c.dl||('the '+agOS+' agent'))+'…\')">'+
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;margin-right:7px"><path d="M12 3v12M7 11l5 5 5-5M4 21h16"/></svg>'+(c.dl||'Download Agent')+'</button></div>'+
+      /* Group Policy has nothing to copy — you download the package and import it.
+         Command Installation is the opposite: copy-only, nothing to download. */
+      (isGpo ? ''
+        : '<div class="agcmd-b"><code>'+c.cmd.replace(/</g,'&lt;')+'</code>'+
+          '<button class="copyi" title="Copy" onclick="toast(\'Command copied\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button></div>')+
+      /* Command Installation is copy-only — there is nothing to download when the
+         command fetches the package itself. GPO keeps its download: the package
+         IS the deliverable there. */
+      (isGpo
+        ? '<div class="agcmd-f"><button class="fbtn" onclick="toast(\'Downloading '+(c.dl||'the package')+'…\')">'+
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;margin-right:7px"><path d="M12 3v12M7 11l5 5 5-5M4 21h16"/></svg>'+(c.dl||'Download')+'</button></div>'
+        : '')+
       '</div>';
     if(isRun){
       h+='<div class="factions ag fin"><div class="gspacer"></div>'+
@@ -1447,6 +1460,9 @@ function agPreview(){
     '<span class="tp-note">Unreachable hosts are skipped. <a onclick="toast(\'192.0.2.x — no route, port 9444 closed\')">Which ones?</a></span>'+
     '</div>';
 }
+/* Command Installation and Group Policy produce an artefact for you to run or
+   import; Remote Installation is the only one that connects to the hosts. */
+function isRunFlow(){return dType==='Command Installation'||!!(DTYPE[dType]&&DTYPE[dType].gpo);}
 function agPick(o){
   agOS=o;agRan=false;agValidated=false;
   /* GPO is Windows-only — switching to the Linux agent moves you off it */
