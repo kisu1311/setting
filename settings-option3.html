@@ -370,7 +370,8 @@ table.grid{width:100%;border-collapse:collapse}
 .tgl.on{background:rgba(34,197,94,.25)}
 .tgl.on .tk{background:var(--green)}
 .fbtn{height:34px;padding:0 14px;border:1px solid var(--border);border-radius:4px;background:var(--panel-2);color:var(--text);font-size:12.5px;font-family:inherit;white-space:nowrap}
-.fbtn:hover{border-color:var(--chip);color:var(--white)}
+.fbtn:hover:not(:disabled){border-color:var(--chip);color:var(--white)}
+.fbtn:disabled{opacity:.4;cursor:not-allowed}
 .fbtn.sm{height:28px;padding:0 10px;font-size:12px}
 .tokrow{display:flex;align-items:center;gap:10px}
 .tokrow .fi{flex:1}
@@ -1338,11 +1339,14 @@ function agRender(){
         '<span class="mp-n'+(blocked?' warn':'')+'">'+(blocked?'Windows only — not available for the Linux agent':m[3])+'</span>'+
         '</button>';
     }).join('')+'</div></div>';
-  /* Installation type */
-  h+='<div class="fld"><label>Installation type</label><div class="segrow">'+
-    ['Single','Bulk'].map(function(m){
-      return '<button class="seg'+(m===agMode?' on':'')+'" onclick="agSetMode(\''+m+'\')">'+m+'</button>';
-    }).join('')+'</div></div>';
+  /* Installation type — only meaningful when there is a target to enter, so it is
+     hidden for the two methods that just produce an artefact. */
+  if(!isRunFlow()){
+    h+='<div class="fld"><label>Installation type</label><div class="segrow">'+
+      ['Single','Bulk'].map(function(m){
+        return '<button class="seg'+(m===agMode?' on':'')+'" onclick="agSetMode(\''+m+'\')">'+m+'</button>';
+      }).join('')+'</div></div>';
+  }
   /* GPO-only: what gets packaged and how it lands on the machine */
   if(isGpo){
     h+='<div class="frow">'+dFld('Package Name',1,dInp('e.g. MotadataAgent-Rollout',agPkgName),3)+
@@ -1389,10 +1393,14 @@ function agRender(){
   /* Command Installation and Windows GPO Deployment both hand you something to run:
      Run reveals the panel below the fields, Finish closes the flow. No drawers. */
   var isCmd=(dType==='Command Installation'), isRun=(isCmd||isGpo);
+  var gen=(isCmd?'Generate Command':'Generate GPO');
   h+='<div class="factions ag"><div class="gspacer"></div>'+
     '<button class="fbtn" onclick="agReset()">Reset</button>'+
     (isRun
-      ? '<button class="gprimary" onclick="agRun()">'+(isCmd?'Generate Command':'Generate GPO')+'</button>'
+      /* before generating, Generate leads; afterwards the emphasis moves to Finish */
+      /* Finish is available from the start — no need to generate first */
+      ? '<button class="'+(agRan?'fbtn':'gprimary')+'" onclick="agRun()">'+gen+'</button>'+
+        '<button class="'+(agRan?'gprimary':'fbtn')+'" onclick="agFinish()">Finish</button>'
       : '<button class="gprimary" onclick="agInstall()">Agent Installation</button>')+
     '</div>';
   /* the run-it-yourself panel is what separates the two categories:
@@ -1414,10 +1422,6 @@ function agRender(){
           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;margin-right:7px"><path d="M12 3v12M7 11l5 5 5-5M4 21h16"/></svg>'+(c.dl||'Download')+'</button></div>'
         : '')+
       '</div>';
-    if(isRun){
-      h+='<div class="factions ag fin"><div class="gspacer"></div>'+
-        '<button class="gprimary" onclick="agFinish()">Finish</button></div>';
-    }
   }
   document.getElementById('dform').innerHTML=h;
   document.getElementById('dhelpTitle').textContent=dType+' · '+agOS;
