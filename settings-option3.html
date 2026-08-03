@@ -507,23 +507,55 @@ table.agtable{width:100%;border-collapse:collapse}
 .agipdim{color:var(--text-dim2)}
 .agretry{display:flex;align-items:center;gap:10px;margin-top:14px;padding:10px 12px;background:rgba(242,80,75,.08);border:1px solid rgba(242,80,75,.35);border-radius:6px}
 .agretry span{font-size:12.5px;color:var(--red);font-weight:600;margin-right:2px}
-/* pre-flight: the six checks that run before anything is pushed to a host */
-.agpf{display:flex;flex-direction:column;gap:8px}
-.agpfr{display:flex;align-items:center;gap:12px;padding:11px 13px;border:1px solid var(--border);border-radius:6px;background:var(--panel-2);transition:opacity .18s,border-color .18s}
+/* pre-flight: the six checks that run before anything is pushed to a host.
+   Rows carry no card chrome — the marker and the result colour do the work. */
+.agpf{display:flex;flex-direction:column;gap:2px}
+.agpfr{display:flex;align-items:center;gap:12px;padding:10px 0;transition:opacity .18s}
 .agpfr.wait{opacity:.5}
-.agpfr.run{border-color:var(--teal)}
-.agpfi{width:15px;height:15px;flex:0 0 15px;display:grid;place-items:center;border-radius:50%;border:1px solid var(--track);font-size:9px;font-weight:700;line-height:1;color:transparent}
+.agpfi{width:16px;height:16px;flex:0 0 16px;display:grid;place-items:center;border-radius:50%;border:1px solid var(--track);font-size:9px;font-weight:700;line-height:1;color:transparent}
 .agpfr.run .agpfi{border-color:transparent}
 .agpfr.ok .agpfi{background:var(--green);border-color:var(--green);color:var(--ink)}
 .agpfr.warn .agpfi{background:var(--orange);border-color:var(--orange);color:var(--ink)}
+.agpfr.bad .agpfi{background:var(--red);border-color:var(--red);color:var(--ink)}
 .agpfb{display:flex;flex-direction:column;gap:2px;min-width:0}
 .agpfb b{font-size:12.5px;font-weight:600;color:var(--text)}
 .agpfr.wait .agpfb b{color:var(--text-dim)}
 .agpfb i{font-style:normal;font-size:11.3px;color:var(--text-dim2)}
 .agpfv{margin-left:auto;padding-left:14px;font-size:11.5px;color:var(--text-dim);text-align:right}
 .agpfr.warn .agpfv{color:var(--orange)}
+.agpfr.bad .agpfv{color:var(--red)}
+.agpfr.run .agpfv{color:var(--teal)}
+/* bulk: a count is only useful if you can open it and see which hosts */
+.agpfc{width:16px;height:16px;flex:0 0 16px;color:var(--text-dim2);transition:transform .16s;cursor:pointer}
+.agpfr.on .agpfc{transform:rotate(90deg)}
+.agpfr.drill{cursor:pointer}
+.agpfh{display:flex;flex-direction:column;gap:7px;padding:0 0 10px 28px}
+.agpfhr{display:flex;align-items:center;gap:9px;font-size:11.5px;color:var(--text-dim)}
+.agpfhr .dot{width:6px;height:6px;border-radius:50%;background:var(--green);flex:0 0 6px}
+.agpfhr.bad .dot{background:var(--red)}
+.agpfhr span{margin-left:auto;font-size:11px;color:var(--text-dim2)}
+.agpfmore{font-size:11.5px;color:var(--teal);cursor:pointer}
+/* what the run covers, before you read a single row */
+.agpfs{display:flex;align-items:center;gap:9px;padding-bottom:10px;margin-bottom:8px;border-bottom:1px solid var(--border-soft)}
+.agpfs b{font-size:12.5px;font-weight:600;color:var(--white)}
+.agpfs i{font-style:normal;font-size:12px;font-weight:600;color:var(--green)}
+.agpfs i.bad{color:var(--red)}
+.agpfs i.none{color:var(--text-dim2);font-weight:400}
 .agpff{display:flex;align-items:center;gap:9px;margin:14px 0 0;font-size:12px;color:var(--text-dim2)}
 .agpff.warn{color:var(--orange)}
+.agpff.bad{color:var(--red)}
+.gprimary:disabled{opacity:.4;cursor:not-allowed}
+/* Agent Download — a corner control, not a block in the form */
+.agtop{display:flex;justify-content:flex-end;position:relative;margin:-2px 0 6px}
+.agdlc{display:flex;align-items:center;gap:7px;padding:6px 10px;border:1px solid var(--border);border-radius:4px;background:transparent;color:var(--teal);font-family:inherit;font-size:12px;cursor:pointer}
+.agdlc:hover{border-color:var(--chip)}
+.agdlc.on{border-color:var(--teal)}
+.agdlc svg{width:15px;height:15px;flex:0 0 15px}
+.agdlc .cv{width:13px;height:13px;flex:0 0 13px;transition:transform .16s}
+.agdlc.on .cv{transform:rotate(180deg)}
+.agdlm{position:absolute;top:calc(100% + 6px);right:0;z-index:20;width:360px;padding:4px;background:var(--panel-2);border:1px solid var(--border);border-radius:4px;box-shadow:0 10px 28px rgba(0,0,0,.5)}
+.agdlm .dl{border:0;background:transparent;width:100%}
+.agdlm .dl+.dl{border-top:1px solid var(--border-soft)}
 /* provisioning: apply to all */
 .applyall{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--text);cursor:pointer}
 .radiorow{display:flex;align-items:center;gap:18px;height:34px}
@@ -1352,11 +1384,41 @@ const AG_INSIGHT={
 };
 const AG_HOSTS=[['192.0.2.37','Successful'],['192.0.2.28','Successful'],['192.0.2.16','Successful'],['192.0.2.15','Failed']];
 
+/* ── Agent Download, as a corner control ──────────────────────────────────────
+   The packages are a side errand, not a step in the flow, so they sit top-right
+   instead of taking a block in the form. Windows ships two packages and opens a
+   menu; Linux ships one archive, so the control downloads it directly. ─────── */
+var agDlOpen=false;
+function agDlIcon(){
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M4 21h16"/></svg>';
+}
+function agDownload(){
+  var pkgs=AG_DOWNLOADS[agOS]||[], many=pkgs.length>1;
+  return '<div class="agtop">'+
+    '<button class="agdlc'+(agDlOpen&&many?' on':'')+'" onclick="'+
+      (many?'agDlToggle()':'toast(\'Downloading '+pkgs[0][0]+'…\')')+'">'+
+      agDlIcon()+'Download Agent'+
+      (many?'<svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>':'')+
+    '</button>'+
+    (agDlOpen&&many
+      ? '<div class="agdlm">'+pkgs.map(function(d){
+          return '<button class="dl" onclick="agDlPick(\''+d[0]+'\')">'+agDlIcon()+
+            '<span class="dl-b"><b>'+d[0]+'</b><i>'+d[1]+'</i></span></button>';
+        }).join('')+'</div>'
+      : '')+
+    '</div>';
+}
+function agDlToggle(){agDlOpen=!agDlOpen;agRender();}
+function agDlPick(name){agDlOpen=false;agRender();toast('Downloading '+name+'…');}
+
 function agRender(){
   var h='';
   /* Supported Agent — the two OS tiles */
   var isGpo=!!(DTYPE[dType]&&DTYPE[dType].gpo);
   if(isGpo)agOS='Windows'; /* Group Policy is Windows-only */
+  /* Agent Download sits in the corner, out of the flow — it is a side errand,
+     not a step. Windows has two packages so it opens a menu; Linux has one. */
+  h+=agDownload();
   h+='<div class="fld"><label>Supported Agent</label><div class="ostiles">'+
     (isGpo?['Windows']:['Windows','Linux']).map(function(o){
       return '<button class="ostile'+(o===agOS?' on':'')+'" title="'+o+'" onclick="agPick(\''+o+'\')">'+
@@ -1427,13 +1489,7 @@ function agRender(){
   h+='<div class="frow">'+dFld('Credential Profiles',1,dSel('Select'),3)+
     '<div class="fld w3 btnfld"><button class="fbtn" onclick="toast(\'Create Credential Profile — opens the credential form\')">Create Credential Profile</button></div></div>';
   }
-  /* Agent Download — on every method screen. Two packages on Windows, one on Linux. */
-  h+='<div class="fld"><label>Agent Download</label><div class="dls">'+
-    (AG_DOWNLOADS[agOS]||[]).map(function(d){
-      return '<button class="dl" onclick="toast(\'Downloading '+d[0]+'\u2026\')">'+
-        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M4 21h16"/></svg>'+
-        '<span class="dl-b"><b>'+d[0]+'</b><i>'+d[1]+'</i></span></button>';
-    }).join('')+'</div></div>';
+  /* Agent Download is not in the flow any more \u2014 see agDownload() at the top */
 
   /* actions */
   /* Command Installation and Windows GPO Deployment both hand you something to run:
@@ -1522,13 +1578,14 @@ function agPick(o){
   agRender();
 }
 
-function agReset(){agRan=false;agValidated=false;agRender();}
+function agReset(){agRan=false;agValidated=false;agFixed=false;agDlOpen=false;agRender();}
 function agRun(){agRan=true;agRender();toast(dType==='Windows GPO Deployment'?'GPO package ready — import it in Group Policy Management':'Command generated — run it on the target host');}
 function agFinish(){var t=dType;agRan=false;closeCreate();toast(t+' saved');}
 function agSetPkgType(t){agPkgType=t;agRan=false;agRender();}
 function agCycleArch(){agArch=AG_ARCH[(AG_ARCH.indexOf(agArch)+1)%AG_ARCH.length];agRan=false;agRender();}
-function agSetMode(m){agMode=m;agRan=false;agRender();}
-function agSetBulk(b){agBulk=b;agRan=false;agRender();}
+/* switching the target changes what pre-flight would find, so drop its state */
+function agSetMode(m){agMode=m;agRan=false;agFixed=false;agRender();}
+function agSetBulk(b){agBulk=b;agRan=false;agFixed=false;agRender();}
 
 /* ---- the three drawer states ---- */
 function agDrawer(title,body){
@@ -1544,26 +1601,49 @@ function agClose(){
 /* ── Pre-flight, Remote Installation only ─────────────────────────────────────
    Six checks run against the target before anything is pushed, so a closed port
    or an account that cannot install surfaces here instead of half-way through.
-   Each row says what it checks and what it found; Privilege is the one that
-   flags 192.0.2.15 in Bulk — the host that then fails in the result table.
-   [ name, what it checks, Single result, Bulk result, warns in Bulk ] ─────── */
+
+   Two shapes, because the two installation types fail differently:
+     Single — one host, per-host answers, and every check clears.
+     Bulk   — counts across the range, each row openable to see which hosts, and
+              a failed check STOPS the run: nothing is pushed until it is fixed.
+   [ name, what it checks, Single result, Bulk result, can fail in Bulk ] ──── */
 const AG_PRE=[
  ['Reach','Target answers on the network',
-  'Responded in 12 ms','4 of 4 hosts responded'],
+  'Responded in 12 ms','{n} of {n} responded'],
  ['Credentials','Selected credential profile signs in',
-  'Accepted \u2014 MOTADATA\\svc-agent','Accepted on 4 of 4 hosts'],
+  'Accepted — MOTADATA\\svc-agent','Accepted on {n} hosts'],
+ /* the only row with two bulk readings: it is the one that can block the run */
  ['Privilege','Account can install software on the host',
-  'Administrator rights confirmed','3 of 4 \u2014 192.0.2.15 cannot write to C:\\Program Files',1],
+  '{priv} confirmed','{priv} on {n} hosts',1,'{ok} of {n} — {b} hosts {fail}'],
  ['Connectivity','Host can reach ObserveOps on 9444 / 9449',
-  'Both ports open','Both ports open on 4 of 4 hosts'],
+  'Both ports open','Both ports open on {n} hosts'],
  ['Existing Agent','No agent already installed',
-  'None found','None found on 4 hosts'],
+  'None found','None found on {n} hosts'],
  ['Readiness','Disk space, OS version and installer prerequisites',
-  'Windows Server 2022 \u00b7 6.4 GB free','All 4 hosts ready'],
+  '{os} · 6.4 GB free','{n} of {n} hosts ready'],
 ];
-var agPfStep=0; /* how many checks have finished */
+/* the hosts a failed Privilege check names — documentation range, this is published */
+const AG_BLOCK=['192.0.2.15','192.0.2.44','192.0.2.51','192.0.2.63'];
+const AG_LAT=['12 ms','18 ms','9 ms','22 ms'];
+var agPfStep=0;      /* how many checks have finished */
+var agPfOpen=-1;     /* which row is opened to show its hosts */
+var agFixed=false;   /* set by Fix credentials — the re-run then clears */
+
+function agPfN(){return agMode==='Single'?1:(agBulk==='CSV'?86:12);}
+/* Linux never trips the Privilege check here — sudo is already proven by the
+   credential profile — so the blocked path is the Windows bulk story. */
+function agPfBlocks(){return agMode!=='Single'&&agOS==='Windows'&&!agFixed;}
+function agPfText(c,bad){
+  var n=agPfN(), b=AG_BLOCK.length;
+  var lin=(agOS==='Linux');
+  return (bad&&c[5]?c[5]:(agMode==='Single'?c[2]:c[3]))
+    .replace(/\{n\}/g,n).replace(/\{b\}/g,b).replace(/\{ok\}/g,n-b)
+    .replace(/\{priv\}/g,lin?'sudo rights':'Administrator rights')
+    .replace(/\{fail\}/g,lin?'need a sudo password':'cannot write to C:\\Program Files')
+    .replace(/\{os\}/g,lin?'Ubuntu 22.04 LTS':'Windows Server 2022');
+}
 function agPreflight(){
-  agPfStep=0;agPfRender();
+  agPfStep=0;agPfOpen=-1;agPfRender();
   clearTimeout(agPreflight._t);
   agPfNext();
 }
@@ -1575,30 +1655,69 @@ function agPfNext(){
     if(agPfStep<AG_PRE.length)agPfNext();
   },600);
 }
+function agPfDrill(i){
+  if(agMode==='Single'||i>=agPfStep)return;   /* nothing to open until it has run */
+  agPfOpen=(agPfOpen===i?-1:i);agPfRender();
+}
+function agPfFix(){
+  agFixed=true;
+  toast('Credential profile updated — re-running the checks');
+  agPreflight();
+}
+/* which hosts sit behind a count — a failed row names the blocked ones */
+function agPfHosts(i,bad){
+  var n=agPfN(), rows;
+  if(bad)rows=AG_BLOCK.map(function(ip){return [ip,agOS==='Linux'?'sudo password required':'Program Files not writable',1];});
+  else rows=AG_HOSTS.slice(0,4).map(function(x,k){return [x[0],i===0?AG_LAT[k]:'OK',0];});
+  var rest=n-rows.length;
+  return '<div class="agpfh">'+rows.map(function(r){
+      return '<div class="agpfhr'+(r[2]?' bad':'')+'"><i class="dot"></i>'+r[0]+'<span>'+r[1]+'</span></div>';
+    }).join('')+
+    (rest>0&&!bad?'<a class="agpfmore" onclick="toast(\'Opening the full host list…\')">and '+rest+' more</a>':'')+
+    '</div>';
+}
 function agPfRender(){
   var bulk=(agMode!=='Single'), done=(agPfStep>=AG_PRE.length);
-  var warns=bulk?AG_PRE.filter(function(c){return c[4];}).length:0;
+  var blocks=agPfBlocks(), n=agPfN(), b=AG_BLOCK.length;
+  var fails=blocks?AG_PRE.filter(function(c){return c[4];}).length:0;
+  /* what the run covers, stated before the rows */
+  var scope=bulk
+    ? '<div class="agpfs"><b>'+n+' hosts from '+(agBulk==='CSV'?'CSV':'IP range')+'</b><span class="gspacer"></span>'+
+      '<i>'+(blocks?n-b:n)+' ready</i>'+
+      (blocks?'<i class="bad">· '+b+' blocked</i>':'<i class="none">· 0 blocked</i>')+'</div>'
+    : '';
   agDrawer('Pre-flight checks',
+    scope+
     '<div class="agpf">'+AG_PRE.map(function(c,i){
-      var st=i<agPfStep?((bulk&&c[4])?'warn':'ok'):(i===agPfStep?'run':'wait');
-      return '<div class="agpfr '+st+'">'+
-        '<span class="agpfi">'+(st==='run'?'<span class="spin"></span>':st==='ok'?'\u2713':st==='warn'?'!':'')+'</span>'+
+      var bad=(blocks&&c[4]);
+      var st=i<agPfStep?(bad?'bad':'ok'):(i===agPfStep?'run':'wait');
+      var open=(agPfOpen===i);
+      var drill=bulk&&i<agPfStep;
+      return '<div class="agpfr '+st+(drill?' drill':'')+(open?' on':'')+'"'+
+        (drill?' onclick="agPfDrill('+i+')"':'')+'>'+
+        '<span class="agpfi">'+(st==='run'?'<span class="spin"></span>':st==='ok'?'✓':st==='bad'?'✕':'')+'</span>'+
         '<span class="agpfb"><b>'+c[0]+'</b><i>'+c[1]+'</i></span>'+
-        (st==='wait'?'':'<span class="agpfv">'+(st==='run'?'Checking\u2026':(bulk?c[3]:c[2]))+'</span>')+
-        '</div>';
+        (st==='wait'?'':'<span class="agpfv">'+(st==='run'?'Checking…':agPfText(c,bad))+'</span>')+
+        (drill?'<svg class="agpfc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg>':'')+
+        '</div>'+
+        (open?agPfHosts(i,bad):'');
     }).join('')+'</div>'+
-    '<div class="agpff'+(done&&warns?' warn':'')+'">'+(done?'':'<span class="spin"></span>')+
+    '<div class="agpff'+(done&&fails?' bad':'')+'">'+(done?'':'<span class="spin"></span>')+
       (done
-        ? (warns
-            ? (AG_PRE.length-warns)+' of '+AG_PRE.length+' checks passed \u00b7 '+warns+' warning \u2014 that host is likely to fail'
-            : 'All '+AG_PRE.length+' checks passed')
-        : 'Checking the target before the agent is pushed')+
+        ? (fails
+            ? fails+' check failed — installation cannot start. Nothing has been pushed to any host.'
+            : 'All '+AG_PRE.length+' checks passed'+(bulk?' on '+n+' hosts':''))
+        : (bulk?'Checking '+n+' hosts — nothing has been pushed yet':'Checking the target before the agent is pushed'))+
     '</div>'+
-    /* the gate: the checks stop here until you press through */
+    /* the gate: a failed check stops here — the only ways on are fixing it or re-running */
     (done
       ? '<div class="agfoot"><div class="gspacer"></div>'+
         '<button class="fbtn" onclick="agPreflight()">Run checks again</button>'+
-        '<button class="gprimary" onclick="agInstall()">Start installation</button></div>'
+        (fails?'<button class="fbtn" onclick="agPfFix()">Fix credentials</button>':'')+
+        (fails
+          ? '<button class="gprimary" disabled title="Fix the failed check first">Start installation</button>'
+          : '<button class="gprimary" onclick="agInstall()">Start installation'+(bulk?' ('+n+' hosts)':'')+'</button>')+
+        '</div>'
       : ''));
 }
 function agInstall(){
@@ -1618,12 +1737,14 @@ function agResult(){
       var bad=x[1]==='Failed';
       return '<tr><td>'+(bad?'<span class="agipdim">'+x[0]+'</span>':'<a class="agiplink" onclick="agInsight()">'+x[0]+'</a>')+'</td>'+
         '<td><span class="agpill '+(bad?'bad':'ok')+'">'+x[1]+'</span></td>'+
-        '<td class="agwhy">'+(bad?'Credential rejected — account cannot write to <code>C:\\Program Files</code>':'Agent 10.0.0 running')+'</td></tr>';
+        /* the reason is one pre-flight cannot predict — credentials and rights
+           were already cleared before anything was pushed */
+        '<td class="agwhy">'+(bad?'Install timed out — host rebooted mid-install':'Agent 10.0.0 running')+'</td></tr>';
     }).join('')+'</tbody></table>'+
     (hosts.filter(function(x){return x[1]==='Failed';}).length
       ? '<div class="agretry"><span>1 host failed.</span>'+
         '<button class="fbtn sm" onclick="toast(\'Retrying 1 failed host…\')">Retry failed</button>'+
-        '<button class="fbtn sm" onclick="toast(\'Opening credential profile…\')">Fix credentials</button></div>'
+        '<button class="fbtn sm" onclick="toast(\'Opening the install log for 192.0.2.15…\')">View log</button></div>'
       : '')+
     '<p class="aghint">Pick a host that installed to choose what the agent should monitor.</p>'+
     agPager());
@@ -1645,8 +1766,10 @@ function agRenderInsight(){
       return '<tr><td class="ck"><span class="ckbox'+(r[2]?' on':'')+'" onclick="this.classList.toggle(\'on\')">✓</span></td>'+
         '<td>'+r[0]+'</td>'+(r[1]?'<td><span class="agpill ok">'+r[1]+'</span></td>':'')+'</tr>';
     }).join('')+'</tbody></table>'+
-    '<div class="agfoot"><label class="applyall"><span class="ckbox on" onclick="this.classList.toggle(\'on\')">\u2713</span>'+
-      'Apply to all 3 hosts that installed</label><div class="gspacer"></div>'+
+    /* apply-to-all only means something when more than one host installed */
+    '<div class="agfoot">'+(agMode==='Single'?''
+      : '<label class="applyall"><span class="ckbox on" onclick="this.classList.toggle(\'on\')">\u2713</span>'+
+        'Apply to all 3 hosts that installed</label>')+'<div class="gspacer"></div>'+
       '<button class="fbtn" onclick="agRenderInsight()">Reset</button>'+
       '<button class="gprimary" onclick="agClose();toast(\'Provisioning started — selected items will be monitored\')">Provisioning</button></div>'+
     agPager());
