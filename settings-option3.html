@@ -381,6 +381,14 @@ table.grid{width:100%;border-collapse:collapse}
 .factions{display:flex;align-items:center;gap:10px;margin-top:26px;padding-top:18px;border-top:1px solid var(--border-soft)}
 
 /* help card */
+/* Agent Download — built from the form's own control language */
+.dls{display:flex;flex-direction:column;gap:8px;max-width:520px}
+.dl{display:flex;align-items:center;gap:11px;text-align:left;padding:10px 13px;background:var(--panel-2);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:inherit;cursor:pointer;transition:border-color .14s}
+.dl:hover{border-color:var(--chip)}
+.dl svg{width:15px;height:15px;flex:0 0 15px;color:var(--teal)}
+.dl-b{display:flex;flex-direction:column;gap:2px;min-width:0}
+.dl-b b{font-family:"JetBrains Mono",monospace;font-size:12px;font-weight:500;color:var(--text)}
+.dl-b i{font-size:11.5px;font-style:normal;color:var(--text-dim)}
 .dhelpwrap{width:330px;flex:0 0 330px;border-left:1px solid var(--border);padding:18px 18px 24px;overflow:auto;background:var(--panel)}
 .dhelp-h{display:flex;flex-direction:column;gap:3px;font-size:13.5px;font-weight:600;color:var(--white);border-left:2px solid var(--teal);padding-left:10px;margin-bottom:14px}
 .dhelp-h span{font-size:11.5px;font-weight:500;color:var(--text-dim2)}
@@ -499,6 +507,23 @@ table.agtable{width:100%;border-collapse:collapse}
 .agipdim{color:var(--text-dim2)}
 .agretry{display:flex;align-items:center;gap:10px;margin-top:14px;padding:10px 12px;background:rgba(242,80,75,.08);border:1px solid rgba(242,80,75,.35);border-radius:6px}
 .agretry span{font-size:12.5px;color:var(--red);font-weight:600;margin-right:2px}
+/* pre-flight: the six checks that run before anything is pushed to a host */
+.agpf{display:flex;flex-direction:column;gap:8px}
+.agpfr{display:flex;align-items:center;gap:12px;padding:11px 13px;border:1px solid var(--border);border-radius:6px;background:var(--panel-2);transition:opacity .18s,border-color .18s}
+.agpfr.wait{opacity:.5}
+.agpfr.run{border-color:var(--teal)}
+.agpfi{width:15px;height:15px;flex:0 0 15px;display:grid;place-items:center;border-radius:50%;border:1px solid var(--track);font-size:9px;font-weight:700;line-height:1;color:transparent}
+.agpfr.run .agpfi{border-color:transparent}
+.agpfr.ok .agpfi{background:var(--green);border-color:var(--green);color:var(--ink)}
+.agpfr.warn .agpfi{background:var(--orange);border-color:var(--orange);color:var(--ink)}
+.agpfb{display:flex;flex-direction:column;gap:2px;min-width:0}
+.agpfb b{font-size:12.5px;font-weight:600;color:var(--text)}
+.agpfr.wait .agpfb b{color:var(--text-dim)}
+.agpfb i{font-style:normal;font-size:11.3px;color:var(--text-dim2)}
+.agpfv{margin-left:auto;padding-left:14px;font-size:11.5px;color:var(--text-dim);text-align:right}
+.agpfr.warn .agpfv{color:var(--orange)}
+.agpff{display:flex;align-items:center;gap:9px;margin:14px 0 0;font-size:12px;color:var(--text-dim2)}
+.agpff.warn{color:var(--orange)}
 /* provisioning: apply to all */
 .applyall{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--text);cursor:pointer}
 .radiorow{display:flex;align-items:center;gap:18px;height:34px}
@@ -1276,8 +1301,10 @@ function renderDForm(){
      Credential Profiles + Create Credential Profile
      Reset | Agent Installation
      Single also shows the run-this-command panel + Download Agent
-   Agent Installation then walks three drawer states:
-     Agent insight (per-IP "Agent Downloading." cards)
+   Agent Installation then walks four drawer states:
+     Pre-flight checks (Reach · Credentials · Privilege · Connectivity ·
+       Existing Agent · Readiness — runs first and holds until Start installation)
+       → Agent insight (per-IP "Agent Downloading." cards)
        → Agent installation (IP | STATUS table, Successful / Failed)
        → Agent insight (Services · Processes · Applications · Logs · APM → Provisioning) */
 var agOS='Windows', agMode='Single', agBulk='IP Range', agTab='Services';
@@ -1295,6 +1322,17 @@ const AG_GPO_CMD={
   'Custom GPO setup':{hint:'Download the MSI and setup script, then run the script on a domain controller',
     cmd:'New-GPO -Name "Motadata Agent Rollout" | New-GPLink -Target "OU=Servers,DC=example,DC=com" ; Set-GPPrefRegistryValue -Name "Motadata Agent Rollout" -Context Computer -Action Update',
     dl:'Download MSI + Script'}
+};
+/* Agent packages, per OS. Windows ships two — the interactive installer and the
+   MSI used for silent / Group Policy deployment; Linux ships one archive. */
+const AG_DOWNLOADS={
+ Windows:[
+   ['MotadataAgent-x64.exe','Installer \u2014 run it on the host'],
+   ['MotadataAgent-x64.msi','MSI package \u2014 for silent or Group Policy deployment'],
+ ],
+ Linux:[
+   ['MOTADATA-AGENT-LINUX.tar.gz','Archive \u2014 extract and run motadata-agent-install.sh'],
+ ],
 };
 const AG_CMD={
   Windows:{hint:'Run this command from an administrator Powershell session',
@@ -1389,6 +1427,14 @@ function agRender(){
   h+='<div class="frow">'+dFld('Credential Profiles',1,dSel('Select'),3)+
     '<div class="fld w3 btnfld"><button class="fbtn" onclick="toast(\'Create Credential Profile — opens the credential form\')">Create Credential Profile</button></div></div>';
   }
+  /* Agent Download — on every method screen. Two packages on Windows, one on Linux. */
+  h+='<div class="fld"><label>Agent Download</label><div class="dls">'+
+    (AG_DOWNLOADS[agOS]||[]).map(function(d){
+      return '<button class="dl" onclick="toast(\'Downloading '+d[0]+'\u2026\')">'+
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M4 21h16"/></svg>'+
+        '<span class="dl-b"><b>'+d[0]+'</b><i>'+d[1]+'</i></span></button>';
+    }).join('')+'</div></div>';
+
   /* actions */
   /* Command Installation and Windows GPO Deployment both hand you something to run:
      Run reveals the panel below the fields, Finish closes the flow. No drawers. */
@@ -1401,7 +1447,8 @@ function agRender(){
       /* Finish is available from the start — no need to generate first */
       ? '<button class="'+(agRan?'fbtn':'gprimary')+'" onclick="agRun()">'+gen+'</button>'+
         '<button class="'+(agRan?'gprimary':'fbtn')+'" onclick="agFinish()">Finish</button>'
-      : '<button class="gprimary" onclick="agInstall()">Agent Installation</button>')+
+      /* Remote runs the pre-flight checks first, then hands over to the install */
+      : '<button class="gprimary" onclick="agPreflight()">Agent Installation</button>')+
     '</div>';
   /* the run-it-yourself panel is what separates the two categories:
      Command Installation hands you the command, Remote Installation pushes for you */
@@ -1489,7 +1536,71 @@ function agDrawer(title,body){
   document.getElementById('agBody').innerHTML=body;
   document.getElementById('agdrawer').classList.add('on');
 }
-function agClose(){document.getElementById('agdrawer').classList.remove('on');}
+function agClose(){
+  /* the drawer runs on timers — closing it must not let a later step reopen it */
+  clearTimeout(agPreflight._t);clearTimeout(agInstall._t);
+  document.getElementById('agdrawer').classList.remove('on');
+}
+/* ── Pre-flight, Remote Installation only ─────────────────────────────────────
+   Six checks run against the target before anything is pushed, so a closed port
+   or an account that cannot install surfaces here instead of half-way through.
+   Each row says what it checks and what it found; Privilege is the one that
+   flags 192.0.2.15 in Bulk — the host that then fails in the result table.
+   [ name, what it checks, Single result, Bulk result, warns in Bulk ] ─────── */
+const AG_PRE=[
+ ['Reach','Target answers on the network',
+  'Responded in 12 ms','4 of 4 hosts responded'],
+ ['Credentials','Selected credential profile signs in',
+  'Accepted \u2014 MOTADATA\\svc-agent','Accepted on 4 of 4 hosts'],
+ ['Privilege','Account can install software on the host',
+  'Administrator rights confirmed','3 of 4 \u2014 192.0.2.15 cannot write to C:\\Program Files',1],
+ ['Connectivity','Host can reach ObserveOps on 9444 / 9449',
+  'Both ports open','Both ports open on 4 of 4 hosts'],
+ ['Existing Agent','No agent already installed',
+  'None found','None found on 4 hosts'],
+ ['Readiness','Disk space, OS version and installer prerequisites',
+  'Windows Server 2022 \u00b7 6.4 GB free','All 4 hosts ready'],
+];
+var agPfStep=0; /* how many checks have finished */
+function agPreflight(){
+  agPfStep=0;agPfRender();
+  clearTimeout(agPreflight._t);
+  agPfNext();
+}
+function agPfNext(){
+  agPreflight._t=setTimeout(function(){
+    agPfStep++;agPfRender();
+    /* the last check leaves the footer sitting there — nothing is pushed to a
+       host until Start installation is pressed */
+    if(agPfStep<AG_PRE.length)agPfNext();
+  },600);
+}
+function agPfRender(){
+  var bulk=(agMode!=='Single'), done=(agPfStep>=AG_PRE.length);
+  var warns=bulk?AG_PRE.filter(function(c){return c[4];}).length:0;
+  agDrawer('Pre-flight checks',
+    '<div class="agpf">'+AG_PRE.map(function(c,i){
+      var st=i<agPfStep?((bulk&&c[4])?'warn':'ok'):(i===agPfStep?'run':'wait');
+      return '<div class="agpfr '+st+'">'+
+        '<span class="agpfi">'+(st==='run'?'<span class="spin"></span>':st==='ok'?'\u2713':st==='warn'?'!':'')+'</span>'+
+        '<span class="agpfb"><b>'+c[0]+'</b><i>'+c[1]+'</i></span>'+
+        (st==='wait'?'':'<span class="agpfv">'+(st==='run'?'Checking\u2026':(bulk?c[3]:c[2]))+'</span>')+
+        '</div>';
+    }).join('')+'</div>'+
+    '<div class="agpff'+(done&&warns?' warn':'')+'">'+(done?'':'<span class="spin"></span>')+
+      (done
+        ? (warns
+            ? (AG_PRE.length-warns)+' of '+AG_PRE.length+' checks passed \u00b7 '+warns+' warning \u2014 that host is likely to fail'
+            : 'All '+AG_PRE.length+' checks passed')
+        : 'Checking the target before the agent is pushed')+
+    '</div>'+
+    /* the gate: the checks stop here until you press through */
+    (done
+      ? '<div class="agfoot"><div class="gspacer"></div>'+
+        '<button class="fbtn" onclick="agPreflight()">Run checks again</button>'+
+        '<button class="gprimary" onclick="agInstall()">Start installation</button></div>'
+      : ''));
+}
 function agInstall(){
   var hosts=agMode==='Single'?[AG_HOSTS[0]]:AG_HOSTS;
   agDrawer('Agent insight','<div class="agcards">'+hosts.map(function(x){
