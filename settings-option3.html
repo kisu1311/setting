@@ -432,7 +432,7 @@ table.grid{width:100%;border-collapse:collapse}
 .copyi{width:28px;height:28px;display:grid;place-items:center;border-radius:4px;color:var(--text-dim2);flex:0 0 28px}
 .copyi svg{width:15px;height:15px}
 .copyi:hover{background:var(--hover);color:var(--white)}
-.agcmd-f{display:flex;justify-content:flex-end;padding:11px 14px;border-top:1px solid var(--border-soft)}
+.agcmd-f{display:flex;flex-direction:column;align-items:flex-end;padding:11px 14px;border-top:1px solid var(--border-soft)}
 .agcmd-f .fbtn{display:flex;align-items:center}
 
 /* right drawer */
@@ -535,6 +535,152 @@ table.agtable{width:100%;border-collapse:collapse}
 .agpfhr.bad .dot{background:var(--red)}
 .agpfhr span{margin-left:auto;font-size:11px;color:var(--text-dim2)}
 .agpfmore{font-size:11.5px;color:var(--teal);cursor:pointer}
+/* ── the bulk pre-flight flow ─────────────────────────────────────────────────
+   Built on the single-target list so the two read the same: same six rows, same
+   order, same wording. Everything added here exists because one target became
+   many — the batch line, per-check counts, the failed-host list on the row that
+   failed, and actions that operate on the failed subset. */
+.agpfbh{display:flex;align-items:baseline;gap:8px;margin-bottom:10px}
+.agpfbh b{font-size:13px;font-weight:600;color:var(--white)}
+.agpfbh span{font-size:12px;color:var(--text-dim2)}
+.agpfbh i{margin-left:auto;font-style:normal;font-size:11.5px;color:var(--text-dim)}
+/* progress: one segment per check, so "how many steps" is visible at a glance */
+.agpfseg{display:flex;gap:4px;margin-bottom:16px}
+.agpfseg i{flex:1;height:5px;border-radius:3px;background:var(--track);transition:background .25s}
+.agpfseg i.ok{background:var(--green)}
+.agpfseg i.bad{background:var(--red)}
+.agpfseg i.run{background:var(--teal)}
+/* every check is a card you can open, pass or fail */
+.agpfcard{border:1px solid var(--border);border-radius:6px;background:var(--panel-2);margin-bottom:8px;overflow:hidden}
+.agpfcard.on{border-color:var(--chip)}
+.agpfcard.bad{border-color:rgba(242,80,75,.4)}
+.agpfcard.run{border-color:var(--teal)}
+.agpfch{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;background:transparent;border:0;
+  color:var(--text);font-family:inherit;text-align:left;cursor:pointer}
+.agpfcard.wait .agpfch{opacity:.5;cursor:default}
+.agpfcard.run .agpfi{border-color:transparent}
+.agpfcard.ok .agpfi{background:var(--green);border-color:var(--green);color:var(--ink)}
+.agpfcard.bad .agpfi{background:var(--red);border-color:var(--red);color:var(--ink)}
+.agpfcv{margin-left:auto;padding-left:14px;font-size:11.5px;color:var(--text-dim);text-align:right;white-space:nowrap}
+.agpfcard.bad .agpfcv em{font-style:normal;color:var(--red);font-weight:600}
+.agpfcv em{font-style:normal;color:var(--text)}
+.agpfcc{width:15px;height:15px;flex:0 0 15px;color:var(--text-dim2);transition:transform .16s}
+.agpfcard.on .agpfcc{transform:rotate(90deg)}
+.agpfcb{border-top:1px solid var(--border-soft);padding:10px 14px 12px}
+.agpfip{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:11.5px;color:var(--text-dim)}
+.agpfip b{font-family:"JetBrains Mono",monospace;font-size:11.5px;font-weight:400;color:var(--text);flex:0 0 108px}
+.agpfip .st{flex:0 0 62px;font-weight:600;color:var(--green)}
+.agpfip.bad .st{color:var(--red)}
+.agpfip .rs{color:var(--text-dim2)}
+.agpfmoreip{font-size:11.5px;color:var(--text-dim2);padding:6px 0 0}
+.agpfxa{display:flex;gap:14px;padding-top:9px;margin-top:6px;border-top:1px solid var(--border-soft)}
+.agpfxa a{font-size:11.5px;color:var(--teal);cursor:pointer}
+/* ── bulk: host-first ──────────────────────────────────────────────────────────
+   With 86 targets the question is "which hosts can I install on?", so the
+   outcome and the host table lead, and the six checks shrink to a filter strip. */
+.agpfban{display:flex;gap:12px;padding:13px 15px;border-radius:6px;margin-bottom:14px;
+  background:var(--panel-2);border:1px solid var(--border)}
+.agpfban.bad{background:rgba(242,80,75,.08);border-color:rgba(242,80,75,.35)}
+.agpfban.ok{background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.3)}
+.agpfban .ic{width:18px;height:18px;flex:0 0 18px;display:grid;place-items:center;border-radius:50%;
+  font-size:10px;font-weight:700;color:var(--ink);background:var(--track);margin-top:1px}
+.agpfban.bad .ic{background:var(--red)}
+.agpfban.ok .ic{background:var(--green)}
+.agpfban b{display:block;font-size:13.5px;font-weight:600;color:var(--white);margin-bottom:3px}
+.agpfban p{margin:0;font-size:12px;color:var(--text-dim)}
+.agpfchips{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.agpfchip{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--border);
+  border-radius:6px;background:var(--panel-2);color:var(--text-dim);font-family:inherit;font-size:11.5px;cursor:pointer}
+.agpfchip:hover{border-color:var(--chip)}
+.agpfchip .d{width:9px;height:9px;flex:0 0 9px;border-radius:50%;background:var(--track);display:grid;place-items:center;font-size:7px;color:var(--ink);font-weight:700}
+.agpfchip.ok .d{background:var(--green)}
+.agpfchip.bad .d{background:var(--red)}
+.agpfchip.bad{color:var(--red);border-color:rgba(242,80,75,.35)}
+.agpfchip.wait{opacity:.5}
+.agpfchip.on{border-color:var(--teal);background:var(--sel);color:var(--text)}
+.agpfchip u{text-decoration:none;font-weight:600;color:var(--text)}
+.agpfchip.bad u{color:var(--red)}
+.agpffilt{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.agpffilt .agsearch{flex:1;margin-bottom:0}
+.agpfsel{height:34px;padding:0 10px;background:var(--panel-2);border:1px solid var(--border);border-radius:4px;
+  color:var(--text);font-family:inherit;font-size:12px}
+.agpfnote{margin:10px 0 0;font-size:11.5px;color:var(--text-dim2)}
+/* ── bulk layout B: one square per IP ─────────────────────────────────────────
+   The run checks every address in the range and each one comes back pass or
+   fail. So draw exactly that: a square per IP, filling in as the run works
+   through them. The shape of the result is readable before any number is. */
+/* the A/B switcher is review chrome, not product UI */
+.agpfsw{display:flex;align-items:center;flex-wrap:nowrap;gap:9px;margin-bottom:16px;font-size:11px;color:var(--text-dim2)}
+.agpfsw .segrow{margin-left:auto;flex:0 0 auto}
+.agpfsw .seg{font-size:11px;padding:0 10px;height:26px}
+.agpfhd{display:flex;align-items:baseline;gap:8px;margin-bottom:14px}
+.agpfhd b{font-size:14px;font-weight:600;color:var(--white)}
+.agpfhd span{font-size:12px;color:var(--text-dim2)}
+.agpfgrid{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:16px}
+.agpfd{width:15px;height:15px;border-radius:3px;background:var(--track);transition:background .2s}
+.agpfd.ok{background:var(--green)}
+.agpfd.bad{background:var(--red)}
+.agpfd.now{background:var(--teal)}
+.agpfleg{display:flex;flex-wrap:wrap;gap:18px;padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid var(--border-soft)}
+.agpfk{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-dim)}
+.agpfk i{width:11px;height:11px;border-radius:3px;background:var(--track);flex:0 0 11px}
+.agpfk.ok i{background:var(--green)}
+.agpfk.bad i{background:var(--red)}
+.agpfk b{font-size:13px;font-weight:600;color:var(--text)}
+.agpfk.bad b{color:var(--red)}
+.agpffail{font-size:12px;color:var(--text-dim);line-height:1.8;margin-bottom:18px}
+.agpffail em{font-style:normal;color:var(--text-dim2);display:block;font-size:11.5px;margin-top:2px}
+.agpffail b{font-family:"JetBrains Mono",monospace;font-size:11.5px;font-weight:400;color:var(--red)}
+/* ── C · outcome buckets (Datadog Fleet / Intune readiness) ─────────────────── */
+.agpfbk{display:flex;gap:10px;margin-bottom:18px}
+.agpfb1{flex:1;padding:14px;border:1px solid var(--border);border-radius:6px;background:var(--panel-2);
+  text-align:left;font-family:inherit;cursor:pointer;transition:border-color .14s}
+.agpfb1:hover{border-color:var(--chip)}
+.agpfb1.on{border-color:var(--teal);background:var(--sel)}
+.agpfb1 b{display:block;font-size:24px;font-weight:600;color:var(--white);line-height:1.1}
+.agpfb1.bad b{color:var(--red)}
+.agpfb1.ok b{color:var(--green)}
+.agpfb1 span{display:block;font-size:12px;color:var(--text-dim);margin-top:4px}
+/* ── D · funnel: where hosts drop out of the run ───────────────────────────── */
+.agpffn{display:flex;flex-direction:column;gap:9px;margin-bottom:16px}
+.agpffr{display:flex;align-items:center;gap:12px}
+.agpffr .lb{flex:0 0 120px;font-size:12px;color:var(--text-dim)}
+.agpffr .tr{flex:1;height:22px;border-radius:3px;background:var(--track);position:relative;overflow:hidden}
+.agpffr .fl{position:absolute;left:0;top:0;bottom:0;background:var(--green);opacity:.85}
+.agpffr.drop .fl{background:var(--teal)}
+.agpffr .vl{flex:0 0 96px;text-align:right;font-size:12px;color:var(--text)}
+.agpffr .vl u{text-decoration:none;color:var(--red);font-size:11.5px}
+.agpffr.pending .fl{background:var(--track)}
+.agpffr.pending .lb,.agpffr.pending .vl{color:var(--text-dim2)}
+/* ── E · run log (Ansible AWX stdout + host summary) ───────────────────────── */
+.agpflog{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin-bottom:14px;
+  max-height:330px;overflow:auto;font-family:"JetBrains Mono",monospace;font-size:11.5px;line-height:1.9}
+.agpflog div{white-space:nowrap;color:var(--text-dim)}
+.agpflog div em{font-style:normal;color:var(--text-dim2);margin-right:10px}
+.agpflog div b{font-weight:400;color:var(--text);margin-right:10px}
+.agpflog div.ok i{font-style:normal;color:var(--green)}
+.agpflog div.bad i{font-style:normal;color:var(--red)}
+.agpflog div.bad{color:var(--red)}
+.agpflog .agpfgrp{color:var(--text-dim2);margin-top:8px;letter-spacing:.3px}
+.agpflog .agpfgrp:first-child{margin-top:0}
+.agpfstat{display:flex;gap:18px;font-family:"JetBrains Mono",monospace;font-size:12px;margin-bottom:16px}
+.agpfstat span{color:var(--text-dim)}
+.agpfstat span b{font-weight:500;color:var(--text)}
+.agpfstat span.ok b{color:var(--green)}
+.agpfstat span.bad b{color:var(--red)}
+/* ── F · readiness verdicts (Intune: Ready / Advisory / Not ready) ─────────── */
+.agpfv1{margin-bottom:16px}
+.agpfvh{display:flex;align-items:center;gap:9px;padding:9px 0;font-size:12px;font-weight:600;color:var(--text)}
+.agpfvh i{width:8px;height:8px;border-radius:50%;background:var(--green);flex:0 0 8px}
+.agpfvh.bad i{background:var(--red)}
+.agpfvh u{text-decoration:none;font-weight:400;color:var(--text-dim2)}
+.agpfvr{display:flex;align-items:center;gap:12px;padding:9px 12px;border:1px solid var(--border);border-radius:4px;
+  background:var(--panel-2);margin-bottom:6px;font-size:12px;color:var(--text-dim)}
+.agpfvr b{font-family:"JetBrains Mono",monospace;font-size:11.5px;font-weight:400;color:var(--text);flex:0 0 110px}
+.agpfvr .fixb{margin-left:auto}
+.agpfacts{display:flex;gap:10px}
+.agpfacts .gprimary{margin-left:0}
+
 /* what the run covers, before you read a single row */
 .agpfs{display:flex;align-items:center;gap:9px;padding-bottom:10px;margin-bottom:8px;border-bottom:1px solid var(--border-soft)}
 .agpfs b{font-size:12.5px;font-weight:600;color:var(--white)}
@@ -546,7 +692,9 @@ table.agtable{width:100%;border-collapse:collapse}
 .agpff.bad{color:var(--red)}
 .gprimary:disabled{opacity:.4;cursor:not-allowed}
 /* Agent Download — a corner control, not a block in the form */
-.agtop{display:flex;justify-content:flex-end;position:relative;margin:-2px 0 6px}
+.agtop{display:flex;flex-direction:column;align-items:flex-end;position:relative;margin:-2px 0 6px}
+/* qualifier under each download, so the two on the Group Policy screen read apart */
+.agdlnote{font-size:11px;line-height:1.5;color:var(--muted);margin-top:5px;text-align:right;max-width:340px}
 .agdlc{display:flex;align-items:center;gap:7px;padding:6px 10px;border:1px solid var(--border);border-radius:4px;background:transparent;color:var(--teal);font-family:inherit;font-size:12px;cursor:pointer}
 .agdlc:hover{border-color:var(--chip)}
 .agdlc.on{border-color:var(--teal)}
@@ -1194,6 +1342,13 @@ function openCreate(){
   document.getElementById('pageGrid').style.display='none';
   document.getElementById('pagePh').style.display='none';
   document.getElementById('pageCreate').style.display='flex';
+  /* open on Agent Based Discovery — it is a leaf, so it lands straight on
+     Remote Installation rather than a chooser. Transient form state is cleared
+     so a reopened form never shows a command generated in a previous visit. */
+  dCat='Agent Based Discovery';dType='Remote Installation';dMode=null;dTarget='IP/Host';
+  if(typeof agRan!=='undefined')agRan=false;
+  if(typeof agFixed!=='undefined')agFixed=false;
+  if(typeof agDlOpen!=='undefined')agDlOpen=false;
   renderDTree();renderDForm();
 }
 function closeCreate(){
@@ -1406,6 +1561,8 @@ function agDownload(){
             '<span class="dl-b"><b>'+d[0]+'</b><i>'+d[1]+'</i></span></button>';
         }).join('')+'</div>'
       : '')+
+    /* Group Policy shows a second download below, so say what this one is not */
+    '<div class="agdlnote">The installer on its own — for installing by hand.</div>'+
     '</div>';
 }
 function agDlToggle(){agDlOpen=!agDlOpen;agRender();}
@@ -1522,7 +1679,11 @@ function agRender(){
          IS the deliverable there. */
       (isGpo
         ? '<div class="agcmd-f"><button class="fbtn" onclick="toast(\'Downloading '+(c.dl||'the package')+'…\')">'+
-          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;margin-right:7px"><path d="M12 3v12M7 11l5 5 5-5M4 21h16"/></svg>'+(c.dl||'Download')+'</button></div>'
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;margin-right:7px"><path d="M12 3v12M7 11l5 5 5-5M4 21h16"/></svg>'+(c.dl||'Download')+'</button>'+
+          /* pairs with the corner Download Agent note — this is the one this method needs */
+          '<div class="agdlnote">'+(agPkgType==='Custom GPO setup'
+            ? 'The MSI plus the setup script — this is what this method needs.'
+            : 'The MSI plus the policy — this is what Group Policy needs.')+'</div></div>'
         : '')+
       '</div>';
   }
@@ -1623,10 +1784,14 @@ const AG_PRE=[
   '{os} · 6.4 GB free','{n} of {n} hosts ready'],
 ];
 /* the hosts a failed Privilege check names — documentation range, this is published */
-const AG_BLOCK=['192.0.2.15','192.0.2.44','192.0.2.51','192.0.2.63'];
+/* the hosts a failed Privilege check names, as positions in the range so the
+   same four land inside a 12-host range as inside an 86-host CSV */
+const AG_BLOCK_AT=[0.17,0.51,0.59,0.73];
+function agPfBlockIdx(){var n=agPfN();return AG_BLOCK_AT.map(function(f){return Math.max(0,Math.round(f*n)-1);});}
+function agPfBlockIps(){return agPfBlockIdx().map(function(i){return '192.0.2.'+(i+1);});}
+const AG_BLOCK=agPfBlockIps;
 const AG_LAT=['12 ms','18 ms','9 ms','22 ms'];
 var agPfStep=0;      /* how many checks have finished */
-var agPfOpen=-1;     /* which row is opened to show its hosts */
 var agFixed=false;   /* set by Fix credentials — the re-run then clears */
 
 function agPfN(){return agMode==='Single'?1:(agBulk==='CSV'?86:12);}
@@ -1634,7 +1799,7 @@ function agPfN(){return agMode==='Single'?1:(agBulk==='CSV'?86:12);}
    credential profile — so the blocked path is the Windows bulk story. */
 function agPfBlocks(){return agMode!=='Single'&&agOS==='Windows'&&!agFixed;}
 function agPfText(c,bad){
-  var n=agPfN(), b=AG_BLOCK.length;
+  var n=agPfN(), b=AG_BLOCK_AT.length;
   var lin=(agOS==='Linux');
   return (bad&&c[5]?c[5]:(agMode==='Single'?c[2]:c[3]))
     .replace(/\{n\}/g,n).replace(/\{b\}/g,b).replace(/\{ok\}/g,n-b)
@@ -1643,7 +1808,8 @@ function agPfText(c,bad){
     .replace(/\{os\}/g,lin?'Ubuntu 22.04 LTS':'Windows Server 2022');
 }
 function agPreflight(){
-  agPfStep=0;agPfOpen=-1;agPfRender();
+  agPfStep=0;agPfSel=-1;agPfOpenRow=-1;agPfView=agPfBlocks()?'blocked':'all';
+  agPfRender();
   clearTimeout(agPreflight._t);
   agPfNext();
 }
@@ -1655,19 +1821,15 @@ function agPfNext(){
     if(agPfStep<AG_PRE.length)agPfNext();
   },600);
 }
-function agPfDrill(i){
-  if(agMode==='Single'||i>=agPfStep)return;   /* nothing to open until it has run */
-  agPfOpen=(agPfOpen===i?-1:i);agPfRender();
-}
 function agPfFix(){
   agFixed=true;
   toast('Credential profile updated — re-running the checks');
   agPreflight();
 }
-/* which hosts sit behind a count — a failed row names the blocked ones */
+/* which hosts sit behind a count — used by the single-target list */
 function agPfHosts(i,bad){
   var n=agPfN(), rows;
-  if(bad)rows=AG_BLOCK.map(function(ip){return [ip,agOS==='Linux'?'sudo password required':'Program Files not writable',1];});
+  if(bad)rows=agPfBlockIps().map(function(ip){return [ip,agOS==='Linux'?'sudo password required':'Program Files not writable',1];});
   else rows=AG_HOSTS.slice(0,4).map(function(x,k){return [x[0],i===0?AG_LAT[k]:'OK',0];});
   var rest=n-rows.length;
   return '<div class="agpfh">'+rows.map(function(r){
@@ -1676,46 +1838,361 @@ function agPfHosts(i,bad){
     (rest>0&&!bad?'<a class="agpfmore" onclick="toast(\'Opening the full host list…\')">and '+rest+' more</a>':'')+
     '</div>';
 }
-function agPfRender(){
-  var bulk=(agMode!=='Single'), done=(agPfStep>=AG_PRE.length);
-  var blocks=agPfBlocks(), n=agPfN(), b=AG_BLOCK.length;
-  var fails=blocks?AG_PRE.filter(function(c){return c[4];}).length:0;
-  /* what the run covers, stated before the rows */
-  var scope=bulk
-    ? '<div class="agpfs"><b>'+n+' hosts from '+(agBulk==='CSV'?'CSV':'IP range')+'</b><span class="gspacer"></span>'+
-      '<i>'+(blocks?n-b:n)+' ready</i>'+
-      (blocks?'<i class="bad">· '+b+' blocked</i>':'<i class="none">· 0 blocked</i>')+'</div>'
-    : '';
-  agDrawer('Pre-flight checks',
-    scope+
-    '<div class="agpf">'+AG_PRE.map(function(c,i){
-      var bad=(blocks&&c[4]);
-      var st=i<agPfStep?(bad?'bad':'ok'):(i===agPfStep?'run':'wait');
-      var open=(agPfOpen===i);
-      var drill=bulk&&i<agPfStep;
-      return '<div class="agpfr '+st+(drill?' drill':'')+(open?' on':'')+'"'+
-        (drill?' onclick="agPfDrill('+i+')"':'')+'>'+
+
+/* ── the single-target list: six rows, one host, nothing to filter ─────────── */
+function agPfSingle(){
+  return '<div class="agpf">'+AG_PRE.map(function(c,i){
+    var st=i<agPfStep?'ok':(i===agPfStep?'run':'wait');
+    return '<div class="agpfr '+st+'">'+
+      '<span class="agpfi">'+(st==='run'?'<span class="spin"></span>':st==='ok'?'✓':'')+'</span>'+
+      '<span class="agpfb"><b>'+c[0]+'</b><i>'+c[1]+'</i></span>'+
+      (st==='wait'?'':'<span class="agpfv">'+(st==='run'?'Checking…':agPfText(c,0))+'</span>')+
+      '</div>';
+  }).join('')+'</div>';
+}
+
+/* ── the bulk view: host-first ─────────────────────────────────────────────────
+   Reading six counts and doing the arithmetic yourself is not an answer to
+   "which hosts can I install on?". So the outcome leads, the checks become a
+   filter strip, and the hosts themselves are the body of the panel. ───────── */
+var agPfSel=-1;              /* which check chip is filtering the table */
+var agPfView='blocked';      /* blocked | ready | all */
+function agPfChip(i){
+  if(i>=agPfStep)return;                       /* that check has not run yet */
+  var bad=agPfBlocks()&&AG_PRE[i][4];
+  agPfSel=(agPfSel===i?-1:i);
+  agPfView=(agPfSel<0?(agPfBlocks()?'blocked':'all'):(bad?'blocked':'ready'));
+  agPfRender();
+}
+function agPfSetView(v){agPfView=v;agPfSel=-1;agPfRender();}
+/* the hosts, blocked first — a blocked host is the only one you must act on */
+function agPfTable(){
+  var n=agPfN(), blocked=agPfBlocks()?agPfBlockIps():[];
+  var why='Privilege — '+(agOS==='Linux'?'sudo password required':'no write access to C:\\Program Files');
+  var rows=[];
+  if(agPfView!=='ready')blocked.forEach(function(ip){rows.push([ip,'Blocked',why,1]);});
+  var readyShown=[];
+  if(agPfView!=='blocked')readyShown=AG_HOSTS.slice(0,agPfView==='ready'?4:2).map(function(x){return [x[0],'Ready','—',0];});
+  rows=rows.concat(readyShown);
+  var hidden=(agPfView==='blocked')?0:(n-blocked.length-readyShown.length);
+  return '<div class="agpffilt">'+
+      '<div class="agsearch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3-3"/></svg><input placeholder="Search hosts" /></div>'+
+      '<select class="agpfsel" onchange="agPfSetView(this.value)">'+
+        ['blocked','ready','all'].map(function(v){
+          var lbl=v==='blocked'?'Blocked ('+blocked.length+')':v==='ready'?'Ready ('+(n-blocked.length)+')':'All ('+n+')';
+          return '<option value="'+v+'"'+(v===agPfView?' selected':'')+'>'+lbl+'</option>';
+        }).join('')+
+      '</select>'+
+    '</div>'+
+    /* the third column only means "blocked by" when something is blocked */
+    '<table class="agtable"><thead><tr><th>HOST</th><th>STATUS</th><th>'+
+      (blocked.length?'BLOCKED BY':'DETAIL')+'</th></tr></thead><tbody>'+
+    (rows.length?rows.map(function(r){
+      return '<tr><td>'+r[0]+'</td><td><span class="agpill '+(r[3]?'bad':'ok')+'">'+r[1]+'</span></td>'+
+        '<td class="agwhy">'+r[2]+'</td></tr>';
+    }).join('')
+      : '<tr><td colspan="3" class="agwhy">No hosts match this filter.</td></tr>')+
+    '</tbody></table>'+
+    (hidden>0?'<p class="agpfnote">and '+hidden+' more ready host'+(hidden===1?'':'s')+' — search to find one.</p>':'');
+}
+/* ── layout A: host-first ─────────────────────────────────────────────────────
+   The outcome leads, the checks become a filter strip, the hosts are the body. */
+function agPfBulkA(done,blocks,n,b){
+  /* the outcome, in one line, before any detail */
+  var ban=done
+    ? (blocks
+        ? '<div class="agpfban bad"><span class="ic">✕</span><span><b>'+b+' of '+n+' hosts are blocked</b>'+
+          '<p>Installation cannot start. Nothing has been pushed to any host.</p></span></div>'
+        : '<div class="agpfban ok"><span class="ic">✓</span><span><b>All '+n+' hosts are ready</b>'+
+          '<p>Nothing has been pushed yet — Start installation when you are ready.</p></span></div>')
+    : '<div class="agpfban"><span class="ic"><span class="spin"></span></span><span><b>Checking '+n+' hosts</b>'+
+      '<p>'+agPfStep+' of '+AG_PRE.length+' checks done — nothing has been pushed yet.</p></span></div>';
+  /* the six checks, reduced to what they contribute: a count and a filter */
+  var chips='<div class="agpfchips">'+AG_PRE.map(function(c,i){
+    var bad=(blocks&&c[4]), ran=i<agPfStep;
+    var st=ran?(bad?'bad':'ok'):(i===agPfStep?'run':'wait');
+    return '<button class="agpfchip '+st+(agPfSel===i?' on':'')+'" onclick="agPfChip('+i+')">'+
+      '<span class="d">'+(st==='ok'?'✓':st==='bad'?'✕':'')+'</span>'+c[0]+
+      (ran?'<u>'+(bad?n-b:n)+'</u>':'')+'</button>';
+  }).join('')+'</div>';
+  return ban+chips+
+    (done?agPfTable():'<p class="agpfnote">Host results appear as the checks finish.</p>');
+}
+
+/* ── layout B: one square per IP ──────────────────────────────────────────────
+   The run walks the range and every address comes back pass or fail, so the
+   panel is a square per IP that fills in as it goes. 82 green and 4 red reads
+   at a glance; the counts and the failed addresses are underneath it. ────── */
+function agPfBulkB(done,blocks,n,b){
+  var lin=(agOS==='Linux');
+  var badIdx=blocks?agPfBlockIdx():[];
+  var checked=done?n:Math.round(n*agPfStep/AG_PRE.length);
+  var pass=0, fail=0, cells='';
+  for(var i=0;i<n;i++){
+    var isBad=badIdx.indexOf(i)>-1;
+    var st=i<checked?(isBad?'bad':'ok'):(i===checked&&!done?'now':'');
+    if(st==='ok')pass++;
+    if(st==='bad')fail++;
+    cells+='<i class="agpfd'+(st?' '+st:'')+'" title="192.0.2.'+(i+1)+
+      (st==='ok'?' — passed all 6 checks':st==='bad'?' — failed':' — not checked yet')+'"></i>';
+  }
+  var head='<div class="agpfhd"><b>'+(done?n+' IPs checked':'Checking '+n+' IPs')+'</b>'+
+    '<span>'+(agBulk==='CSV'?'from CSV':'192.0.2.1 – 192.0.2.'+n)+
+    (done?'':' · '+checked+' done')+'</span></div>';
+  var leg='<div class="agpfleg">'+
+    '<span class="agpfk ok"><i></i><b>'+pass+'</b> passed</span>'+
+    (fail?'<span class="agpfk bad"><i></i><b>'+fail+'</b> failed</span>':'')+
+    (n-checked>0?'<span class="agpfk"><i></i><b>'+(n-checked)+'</b> waiting</span>':'')+
+    '</div>';
+  /* naming the failures is the whole point of running this first */
+  var fails=(done&&blocks)
+    ? '<div class="agpffail">Failed: '+agPfBlockIps().map(function(ip){return '<b>'+ip+'</b>';}).join(' &nbsp; ')+
+      '<em>The selected login cannot '+(lin?'run sudo':'install software')+' on these — fix it and all '+b+' pass.</em></div>'
+    : (done?'<div class="agpffail"><em>Every address passed all '+AG_PRE.length+' checks. Nothing has been installed yet.</em></div>':'');
+  var acts=!done?''
+    : '<div class="agpfacts">'+
+      (blocks
+        ? '<button class="gprimary" onclick="agPfFix()">Fix the login</button>'
+        : '<button class="gprimary" onclick="agInstall()">Install on '+n+' IPs</button>')+
+      '<button class="fbtn" onclick="agPreflight()">Check again</button></div>';
+  return head+'<div class="agpfgrid">'+cells+'</div>'+leg+fails+acts;
+}
+
+
+/* ── C · outcome buckets ──────────────────────────────────────────────────────
+   Datadog's Fleet Automation and Intune's readiness report both open on buckets
+   of what needs doing, not on a list. You pick the bucket that concerns you. */
+var agPfBucket='bad';
+function agPfSetBucket(v){agPfBucket=v;agPfRender();}
+/* ── the bulk pre-flight flow ─────────────────────────────────────────────────
+   Competitor precedent (Oracle Enterprise Manager's Agent Deploy wizard) runs a
+   "remote prerequisite check" phase across every host before deployment, shows
+   the results per host, and offers retry-the-failed-hosts as the way forward.
+   That is what this is, on top of the single-target list so the two flows read
+   the same. Bulk changes only: a batch line, per-check counts, progress, the
+   failed hosts named on the row that failed, and actions on that subset. ─── */
+function agPfRetry(){
+  toast('Re-checked the '+AG_BLOCK_AT.length+' failed hosts — still failing, the login has not changed');
+}
+function agPfCopy(){
+  toast('Copied '+AG_BLOCK_AT.length+' addresses to the clipboard');
+}
+function agPfBulkS(done,blocks,n,b){
+  var lin=(agOS==='Linux'), ips=agPfBlockIps(), why=lin?'sudo password required':'C:\\Program Files not writable';
+  /* what the batch is, and which check the run is on */
+  var head='<div class="agpfbh"><b>'+n+' IPs</b><span>'+(agBulk==='CSV'?'from CSV':'192.0.2.1 – 192.0.2.'+n)+'</span>'+
+    '<i>'+(done?(blocks?b+' of '+n+' need attention':'all '+n+' ready')
+                :'Check '+Math.min(agPfStep+1,AG_PRE.length)+' of '+AG_PRE.length)+'</i></div>';
+  /* one segment per check — the number of steps is visible without counting rows */
+  var seg='<div class="agpfseg">'+AG_PRE.map(function(c,i){
+    var st=i<agPfStep?((blocks&&c[4])?'bad':'ok'):(i===agPfStep?'run':'');
+    return '<i class="'+st+'"></i>';
+  }).join('')+'</div>';
+  /* every check is a card, and every card opens to the addresses behind its result */
+  var cards=AG_PRE.map(function(c,i){
+    var bad=(blocks&&c[4]);
+    var st=i<agPfStep?(bad?'bad':'ok'):(i===agPfStep?'run':'wait');
+    var open=(agPfOpenRow===i), ran=(st==='ok'||st==='bad');
+    var pass=bad?n-b:n;
+    var result=st==='run'?'Checking '+n+' hosts…'
+      : st==='wait'?'Waiting'
+      : bad?'<em>'+b+' failed</em> · '+pass+' passed'
+      : '<em>'+pass+' passed</em> · 0 failed';
+    var body='';
+    if(open&&ran){
+      var rows='';
+      if(bad)rows+=ips.map(function(ip){
+        return '<div class="agpfip bad"><b>'+ip+'</b><span class="st">Failed</span><span class="rs">'+why+'</span></div>';
+      }).join('');
+      var sample=AG_HOSTS.slice(0,bad?2:4);
+      rows+=sample.map(function(x){
+        return '<div class="agpfip"><b>'+x[0]+'</b><span class="st">Passed</span><span class="rs">'+agPfPassNote(i,lin)+'</span></div>';
+      }).join('');
+      var rest=pass-sample.length;
+      if(rest>0)rows+='<div class="agpfmoreip">and '+rest+' more passed</div>';
+      body='<div class="agpfcb">'+rows+
+        (bad?'<div class="agpfxa"><a onclick="agPfCopy()">Copy the '+b+' failed addresses</a>'+
+             '<a onclick="toast(\'Downloading pre-flight report (CSV)…\')">Download report</a></div>':'')+
+        '</div>';
+    }
+    return '<div class="agpfcard '+st+(open?' on':'')+'">'+
+      '<button class="agpfch"'+(ran?' onclick="agPfOpen('+i+')"':'')+'>'+
         '<span class="agpfi">'+(st==='run'?'<span class="spin"></span>':st==='ok'?'✓':st==='bad'?'✕':'')+'</span>'+
         '<span class="agpfb"><b>'+c[0]+'</b><i>'+c[1]+'</i></span>'+
-        (st==='wait'?'':'<span class="agpfv">'+(st==='run'?'Checking…':agPfText(c,bad))+'</span>')+
-        (drill?'<svg class="agpfc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg>':'')+
-        '</div>'+
-        (open?agPfHosts(i,bad):'');
-    }).join('')+'</div>'+
-    '<div class="agpff'+(done&&fails?' bad':'')+'">'+(done?'':'<span class="spin"></span>')+
-      (done
-        ? (fails
-            ? fails+' check failed — installation cannot start. Nothing has been pushed to any host.'
-            : 'All '+AG_PRE.length+' checks passed'+(bulk?' on '+n+' hosts':''))
-        : (bulk?'Checking '+n+' hosts — nothing has been pushed yet':'Checking the target before the agent is pushed'))+
-    '</div>'+
-    /* the gate: a failed check stops here — the only ways on are fixing it or re-running */
+        '<span class="agpfcv">'+result+'</span>'+
+        (ran?'<svg class="agpfcc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg>':'')+
+      '</button>'+body+'</div>';
+  }).join('');
+  var foot='<div class="agpff'+(done&&blocks?' bad':'')+'">'+(done?'':'<span class="spin"></span>')+
     (done
+      ? (blocks
+          ? b+' of '+n+' hosts failed a check — installation cannot start. Nothing has been pushed to any host.'
+          : 'All '+AG_PRE.length+' checks passed on all '+n+' hosts')
+      : 'Checking '+n+' hosts — nothing has been pushed yet')+'</div>';
+  /* bulk-specific actions: they operate on the failed subset, not the run */
+  var acts=!done?''
+    : '<div class="agfoot"><div class="gspacer"></div>'+
+      (blocks
+        ? '<button class="fbtn" onclick="agPfRetry()">Retry '+b+' failed</button>'+
+          '<button class="fbtn" onclick="agPfFix()">Fix credentials</button>'+
+          '<button class="gprimary" disabled title="Fix the '+b+' failed hosts first">Start installation</button>'
+        : '<button class="fbtn" onclick="agPreflight()">Run checks again</button>'+
+          '<button class="gprimary" onclick="agInstall()">Start installation ('+n+' hosts)</button>')+
+      '</div>';
+  return head+seg+cards+foot+acts;
+}
+/* what "passed" meant for that particular check, per host */
+function agPfPassNote(i,lin){
+  return ['Responded in 12 ms','Signed in','Can install software',
+          'Ports 9444 / 9449 open','No agent found',
+          (lin?'Ubuntu 22.04 LTS':'Windows Server 2022')+' · 6.4 GB free'][i]||'OK';
+}
+var agPfOpenRow=-1;
+
+function agPfBulkC(done,blocks,n,b){
+  var lin=(agOS==='Linux'), ready=blocks?n-b:n, ips=agPfBlockIps();
+  var waiting=done?0:n-Math.round(n*agPfStep/AG_PRE.length);
+  var tile=function(k,val,label,cls){
+    return '<button class="agpfb1 '+cls+(agPfBucket===k?' on':'')+'" onclick="agPfSetBucket(\''+k+'\')">'+
+      '<b>'+val+'</b><span>'+label+'</span></button>';
+  };
+  var list;
+  if(agPfBucket==='bad'&&blocks&&done)
+    list=ips.map(function(ip){return '<div class="agpfvr"><b>'+ip+'</b>The login cannot '+(lin?'run sudo':'install software')+' here'+
+      '<button class="fbtn sm fixb" onclick="agPfFix()">Fix</button></div>';}).join('');
+  else if(agPfBucket==='ok')
+    list=AG_HOSTS.slice(0,3).map(function(x){return '<div class="agpfvr"><b>'+x[0]+'</b>Passed all '+AG_PRE.length+' checks</div>';}).join('')+
+      '<p class="agpfnote">and '+(ready-3)+' more ready to install.</p>';
+  else list='<p class="agpfnote">Nothing in this group.</p>';
+  return '<div class="agpfbk">'+
+      tile('ok',ready,'ready to install','ok')+
+      tile('bad',blocks?b:0,'need attention','bad')+
+      tile('wait',waiting,'not checked yet','')+
+    '</div>'+list+
+    (done?'<div class="agpfacts" style="margin-top:16px">'+
+      (blocks?'<button class="gprimary" onclick="agPfFix()">Fix the login</button>'
+             :'<button class="gprimary" onclick="agInstall()">Install on '+n+' hosts</button>')+
+      '<button class="fbtn" onclick="agPreflight()">Check again</button></div>':'');
+}
+
+/* ── D · funnel ───────────────────────────────────────────────────────────────
+   Every check is a gate the range passes through, so show the drop-off: you see
+   which gate lost hosts and how many made it all the way. */
+function agPfBulkD(done,blocks,n,b){
+  var ready=blocks?n-b:n;
+  var rows=[['Targeted',n,0]].concat(AG_PRE.map(function(c,i){
+    var lost=(blocks&&c[4])?b:0;
+    var through=(i<2)?n:(blocks?n-b:n);
+    return [c[0],through,lost,i];
+  }));
+  return '<div class="agpfhd"><b>'+n+' addresses through '+AG_PRE.length+' checks</b>'+
+      '<span>'+(done?ready+' made it to the end':agPfStep+' of '+AG_PRE.length+' checks run')+'</span></div>'+
+    '<div class="agpffn">'+rows.map(function(r,i){
+      var ran=(i===0)||(i-1<agPfStep);
+      var v=ran?r[1]:0;
+      return '<div class="agpffr'+(r[2]?' drop':'')+(ran?'':' pending')+'">'+
+        '<span class="lb">'+r[0]+'</span>'+
+        '<span class="tr"><i class="fl" style="width:'+(v/n*100)+'%"></i></span>'+
+        '<span class="vl">'+(ran?v+' of '+n+(r[2]?' <u>−'+r[2]+'</u>':''):'—')+'</span></div>';
+    }).join('')+'</div>'+
+    (done?'<p class="agpffail">'+(blocks
+        ? b+' addresses dropped out at <b>Privilege</b> — the login cannot install there.'
+        : 'Every address cleared every check.')+'</p>'+
+      '<div class="agpfacts">'+
+      (blocks?'<button class="gprimary" onclick="agPfFix()">Fix the login</button>'
+             :'<button class="gprimary" onclick="agInstall()">Install on '+n+' hosts</button>')+
+      '<button class="fbtn" onclick="agPreflight()">Check again</button></div>':'');
+}
+
+/* ── E · run log ──────────────────────────────────────────────────────────────
+   What AWX shows: a line per host as it is handled, then a stats footer. The
+   most familiar shape for anyone who has run a playbook across a fleet. */
+function agPfBulkE(done,blocks,n,b){
+  var lin=(agOS==='Linux'), idx=blocks?agPfBlockIdx():[], ips=agPfBlockIps();
+  var pass=0, fail=0, out='';
+  /* grouped by check, so the log reads as "what this check found" rather than
+     one undifferentiated stream */
+  AG_PRE.forEach(function(c,ci){
+    if(ci>=agPfStep&&!done)return;
+    var bad=(blocks&&c[4]);
+    out+='<div class="agpfgrp">— '+c[0].toUpperCase()+' — '+c[1].toLowerCase()+'</div>';
+    if(bad){
+      ips.forEach(function(ip){
+        out+='<div class="bad"><b>'+ip+'</b><i>✕ failed</i> '+(lin?'sudo password required':'cannot write to C:\\Program Files')+'</div>';
+      });
+      out+='<div class="ok"><b>'+(n-b)+' hosts</b><i>✓ ok</i> passed this check</div>';
+    }else{
+      out+='<div class="ok"><b>'+n+' hosts</b><i>✓ ok</i> passed this check</div>';
+    }
+  });
+  if(done){ fail=blocks?b:0; pass=n-fail; }
+  else { pass=n; fail=0; out+='<div><em>·</em>running '+(AG_PRE[agPfStep]||{})[0]+' on '+n+' hosts…</div>'; }
+  return '<div class="agpflog">'+(out||'<div>starting…</div>')+'</div>'+
+    '<div class="agpfstat"><span class="ok">ok=<b>'+(done?pass:'—')+'</b></span>'+
+      '<span class="bad">failed=<b>'+(done?fail:'—')+'</b></span>'+
+      '<span>checks=<b>'+agPfStep+'/'+AG_PRE.length+'</b></span>'+
+      '<span>total=<b>'+n+'</b></span></div>'+
+    (done?'<div class="agpfacts">'+
+      (blocks?'<button class="gprimary" onclick="agPfFix()">Fix the login</button>'
+             :'<button class="gprimary" onclick="agInstall()">Install on '+n+' hosts</button>')+
+      '<button class="fbtn" onclick="agPreflight()">Run again</button></div>':'');
+}
+
+/* ── F · readiness verdicts ───────────────────────────────────────────────────
+   Intune reports Ready / Advisory / Not ready per device rather than pass/fail
+   per check, and puts the remedy on the row. Grouped by verdict, worst first. */
+function agPfBulkF(done,blocks,n,b){
+  var lin=(agOS==='Linux'), ready=blocks?n-b:n, ips=agPfBlockIps();
+  if(!done)return '<div class="agpfhd"><b>Working out which hosts are ready</b>'+
+    '<span>'+agPfStep+' of '+AG_PRE.length+' checks run on '+n+' hosts</span></div>';
+  return '<div class="agpfhd"><b>Readiness of '+n+' hosts</b><span>from '+(agBulk==='CSV'?'CSV':'IP range')+'</span></div>'+
+    (blocks?'<div class="agpfv1"><div class="agpfvh bad"><i></i>Not ready <u>'+b+' hosts · fix before installing</u></div>'+
+      ips.map(function(ip){
+        return '<div class="agpfvr"><b>'+ip+'</b>Needs a login allowed to '+(lin?'run sudo':'install software')+
+          '<button class="fbtn sm fixb" onclick="agPfFix()">Fix</button></div>';
+      }).join('')+'</div>':'')+
+    '<div class="agpfv1"><div class="agpfvh"><i></i>Ready <u>'+ready+' hosts · nothing to do</u></div>'+
+      AG_HOSTS.slice(0,2).map(function(x){
+        return '<div class="agpfvr"><b>'+x[0]+'</b>Passed every check</div>';
+      }).join('')+
+      '<p class="agpfnote">and '+(ready-2)+' more.</p></div>'+
+    '<div class="agpfacts" style="margin-top:16px">'+
+      (blocks?'<button class="gprimary" onclick="agPfFix()">Fix the '+b+' not ready</button>'
+             :'<button class="gprimary" onclick="agInstall()">Install on '+n+' hosts</button>')+
+      '<button class="fbtn" onclick="agPreflight()">Check again</button></div>';
+}
+
+/* both layouts stay in the file — the switcher is review chrome, not product UI */
+var agPfLayout='S';
+function agPfSetLayout(v){agPfLayout=v;agPfRender();}
+function agPfBulk(done,blocks,n,b){
+  var LAY={S:'Bulk flow',A:'A · Table',B:'B · Grid',C:'C · Buckets',D:'D · Funnel',E:'E · Log',F:'F · Verdicts'};
+  var body={S:agPfBulkS,A:agPfBulkA,B:agPfBulkB,C:agPfBulkC,D:agPfBulkD,E:agPfBulkE,F:agPfBulkF}[agPfLayout];
+  return '<div class="agpfsw">Bulk layout<div class="segrow">'+
+      Object.keys(LAY).map(function(v){
+        return '<button class="seg'+(v===agPfLayout?' on':'')+'" onclick="agPfSetLayout(\''+v+'\')">'+LAY[v]+'</button>';
+      }).join('')+'</div></div>'+
+    body(done,blocks,n,b);
+}
+
+function agPfRender(){
+  var bulk=(agMode!=='Single'), done=(agPfStep>=AG_PRE.length);
+  var blocks=agPfBlocks(), n=agPfN(), b=AG_BLOCK_AT.length;
+  var fails=blocks?AG_PRE.filter(function(c){return c[4];}).length:0;
+  agDrawer('Pre-flight checks',
+    (bulk?agPfBulk(done,blocks,n,b):agPfSingle())+
+    (bulk?'':
+      '<div class="agpff">'+(done?'':'<span class="spin"></span>')+
+        (done?'All '+AG_PRE.length+' checks passed':'Checking the target before the agent is pushed')+
+      '</div>')+
+    /* the gate: a failed check stops here — the only ways on are fixing it or
+       re-running. Layout B carries its own buttons, so it gets no footer. */
+    (done&&!(bulk&&agPfLayout!=='A'&&agPfLayout!=='X')
       ? '<div class="agfoot"><div class="gspacer"></div>'+
         '<button class="fbtn" onclick="agPreflight()">Run checks again</button>'+
         (fails?'<button class="fbtn" onclick="agPfFix()">Fix credentials</button>':'')+
         (fails
-          ? '<button class="gprimary" disabled title="Fix the failed check first">Start installation</button>'
+          ? '<button class="gprimary" disabled title="Fix the blocked hosts first">Start installation</button>'
           : '<button class="gprimary" onclick="agInstall()">Start installation'+(bulk?' ('+n+' hosts)':'')+'</button>')+
         '</div>'
       : ''));
